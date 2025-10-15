@@ -11,7 +11,6 @@ export default function CalendarScreen() {
   const [eventName, setEventText] = useState('');
   const [eventList, setEventList] = useState<string[]>([]);
   const [eventDesc, setEventDesc] = useState('');
-  const [eventDate, setEventDate] = useState('');
   const [eventDescList, setDescList] = useState<string[]>([]);
 
   return (
@@ -61,7 +60,6 @@ export default function CalendarScreen() {
 
               setEventText('');
               setEventDesc('');
-              setEventDate('');
               console.log(eventList);
               console.log(eventDescList);
             }}/>
