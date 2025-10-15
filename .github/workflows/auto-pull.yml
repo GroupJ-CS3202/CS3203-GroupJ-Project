@@ -1,0 +1,21 @@
+name: Pull latest main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0  # important: fetch full history to allow pull/merge
+
+      - name: Pull latest changes
+        run: |
+          git pull origin main
