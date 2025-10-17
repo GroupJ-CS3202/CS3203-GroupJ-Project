@@ -8,6 +8,7 @@ export default function CalendarScreen() {
 
   const [selected, setSelected] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [addEventDisabled, setAddEventDisabled] = useState(true);
   const [eventName, setEventText] = useState('');
   const [eventList, setEventList] = useState<string[]>([]);
   const [eventDesc, setEventDesc] = useState('');
@@ -15,21 +16,25 @@ export default function CalendarScreen() {
 
   return (
     <View>
-      <Calendar
+      <Calendar //TODO: send date to backend function to create const/object to display event
       current = {today}
       onDayPress = {(day) => {
-        console.log (day);
-        setSelected(day.dateString);
+        console.log (day);  //log date to console
+        setSelected(day.dateString);  //marks date as selected
+        setAddEventDisabled(false); //enables add event button
       }}
 
       markedDates={{
-        [selected]: {selected: true, disableTouchEvent: true}
+        [selected]: {selected: true, disableTouchEvent: true} //Selects date
       }}
       />
       <View style={styles.eventBtn}>
-        <Button title="+ Add Event"  onPress={() => {
-          setModalVisible(true);
-        }}/>
+        <Button
+          title="+ Add Event" 
+          onPress={() => {setModalVisible(true);}}  //opens add event dialog
+          disabled={addEventDisabled} //determines if button is disabled
+          
+          />
       </View>
       
 
@@ -80,7 +85,7 @@ const styles = StyleSheet.create ({
   Modal: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100     //This is a really stupid way to center the add event box. Work on fixing this later
+    paddingTop: 100     //This is a rather silly way to center the add event box. Work on fixing this later
   },
 
   modalContainer: {
