@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
-
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
 
