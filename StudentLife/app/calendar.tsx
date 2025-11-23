@@ -45,7 +45,7 @@ export default function CalendarScreen() {
           <View style={styles.modalContainer}>
             <Text>Event Info:</Text>
             <TextInput placeholder='Event Name' value={eventName} onChangeText={setEventText} style={styles.input}></TextInput>
-            <TextInput placeholder='Event Description' value={eventDesc} onChangeText={setEventDesc} style={styles.input}></TextInput>
+            <TextInput placeholder='Event Description' value={eventDesc} onChangeText={setEventDesc} style={styles.input} multiline={true} ></TextInput>
             <Button title='save' onPress={() => {
               setModalVisible(false);
               console.log('Event name: ', eventName); 
@@ -88,6 +88,7 @@ const styles = StyleSheet.create ({
   },
 
   modalContainer: {
+    width: '80%',
     margin: 20,
     padding: 20,
     borderRadius: 10,
