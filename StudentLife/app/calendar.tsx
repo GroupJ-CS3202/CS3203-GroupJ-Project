@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { View, Modal, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
+interface Event{
+  name: string;
+  desc: string;
+}
+
+interface EventsState{
+  [dataString: string]: Event[];
+}
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
 
@@ -9,12 +17,29 @@ export default function CalendarScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [addEventDisabled, setAddEventDisabled] = useState(true);
   const [eventName, setEventText] = useState('');
-  const [eventList, setEventList] = useState<string[]>([]);
   const [eventDesc, setEventDesc] = useState('');
-  const [eventDescList, setDescList] = useState<string[]>([]);
+
+  const[events, setEvents] = useState<EventsState>({});
+  
+  const selectedDayEvents = events[selected] || [];
+  const onSaveEvent = () => {
+    const newEvent: Event = {name: eventName, desc : eventDesc};
+
+    setEvents(prevEvents => {
+      const existingEvents = prevEvents[selected] || [];
+      return {
+        ...prevEvents,
+        [selected]: [...existingEvents, newEvent]
+      };
+    });
+    setModalVisible(false);
+    setEventText('');
+    setEventDesc('');
+    console.log('Saved Event:', newEvent.name, 'for date:', selected);
+  };
 
   return (
-    <View>
+    <ScrollView>
       <Calendar //TODO: send date to backend function to create const/object to display event
       current = {today}
       onDayPress = {(day) => {
@@ -35,6 +60,25 @@ export default function CalendarScreen() {
           
           />
       </View>
+      {selected ? (
+        <View style={styles.eventListContainer}>
+          <Text style = {styles.eventListHeader}> Event List of {selected} </Text>
+            {selectedDayEvents.length > 0 ?(
+              selectedDayEvents.map((event, index) => (
+                <View key = {index} style = {styles.eventItem}>
+                  <Text style = {styles.eventNameText}>**{event.name}**</Text>
+                  <Text style = {styles.eventDescText}>{event.desc}</Text>
+                </View>
+              ))
+            ):(
+              <Text style = {styles.noEventText}></Text>
+            )}
+            </View>
+          ) : (
+            <View style = {styles.eventListContainer}>
+              <Text style = {styles.noEventText}></Text>
+            </View>
+      )}
       
 
       <Modal
@@ -43,40 +87,27 @@ export default function CalendarScreen() {
       >
         <View style={styles.Modal}>
           <View style={styles.modalContainer}>
-            <Text>Event Info:</Text>
+            <Text style = {{fontSize: 18, marginBottom : 10}}>{selected} Event </Text>
             <TextInput placeholder='Event Name' value={eventName} onChangeText={setEventText} style={styles.input}></TextInput>
             <TextInput placeholder='Event Description' value={eventDesc} onChangeText={setEventDesc} style={styles.input} multiline={true} ></TextInput>
-            <Button title='save' onPress={() => {
-              setModalVisible(false);
-              console.log('Event name: ', eventName); 
-
-              if (eventList.length == 0) {
-                setEventList(event => [eventName]);
-              } else {
-                setEventList(prevEvents => [...prevEvents, eventName]);
-              }
-              
-              if (eventDescList.length == 0) {
-                setDescList(desc => [eventDesc]);
-              } else {
-                setDescList(prevDescs => [...prevDescs, eventDesc]);
-              }
-
-              setEventText('');
-              setEventDesc('');
-              console.log(eventList);
-              console.log(eventDescList);
-            }}/>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
+              <Button 
+                title='Save' 
+                onPress={onSaveEvent}
+                disabled={eventName.trim() === ''} 
+              />
             <Button title = "close" onPress={() => {
               setEventText('');
+              setEventDesc('');
               setModalVisible(false); 
               } } color="black"/>
           </View>
         </View> 
-      </Modal>
+      </View>
+    </Modal>
+    </ScrollView>
 
 
-    </View>
   );
 }
 
@@ -92,19 +123,68 @@ const styles = StyleSheet.create ({
     margin: 20,
     padding: 20,
     borderRadius: 10,
-    opacity: 0.5,
+    opacity: 1,
+    backgroundColor:'white',
+    elevation : 5,
+    shadowColor : '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 
   input: {
-    borderColor: 'black',
-    borderWidth: 2,
-    margin: 5,
-    padding: 5
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginVertical: 8,
+    padding: 10,
+    backgroundColor: 'f9f9f9#',
+    minHeight: 40,
+    maxHeight: 120,
   },
 
   eventBtn: {
     padding:10,
     margin:10,
     textAlign: 'center',
+  },
+  eventListContainer: {
+    padding: 15,
+    margin: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  eventListHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 5,
+  },
+  eventItem: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#007aff',
+    elevation: 1,
+  },
+  eventNameText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  eventDescText: {
+    fontSize: 12,
+    color: '#555',
+  },
+  noEventText: {
+    fontSize: 14,
+    color: 'gray',
+    textAlign: 'center',
+    paddingVertical: 10,
   }
 });
