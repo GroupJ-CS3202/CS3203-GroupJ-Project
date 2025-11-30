@@ -22,6 +22,18 @@ export default function CalendarScreen() {
   const[events, setEvents] = useState<EventsState>({});
   
   const selectedDayEvents = events[selected] || [];
+  const marked: any = {
+    [selected]: { selected: true, disableTouchEvent: true}
+  }
+  Object.keys(events).forEach(date => {
+    if (events[date].length>0){
+      marked[date] = {
+        ...(marked[date] || {}),
+        marked: true,
+        dotColor: 'blue'
+      }
+    }
+  })
   const onSaveEvent = () => {
     const newEvent: Event = {name: eventName, desc : eventDesc};
 
@@ -48,9 +60,7 @@ export default function CalendarScreen() {
         setAddEventDisabled(false); //enables add event button
       }}
 
-      markedDates={{
-        [selected]: {selected: true, disableTouchEvent: true} //Selects date
-      }}
+      markedDates={marked}
       />
       <View style={styles.eventBtn}>
         <Button
