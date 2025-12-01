@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { uploadEvent, downloadEvents } from './azureBlob';
+import { useEffect } from 'react';
 
 interface Event{
   name: string;
@@ -20,6 +22,15 @@ export default function CalendarScreen() {
   const [eventDesc, setEventDesc] = useState('');
 
   const[events, setEvents] = useState<EventsState>({});
+
+  useEffect(() => {
+    async function loadEvents(){
+      if (!selected) return;
+      const loaded = await downloadEvents(selected);
+      setEvents(prev => ({ ...prev, [selected]: loaded} ));
+    }
+    loadEvents();
+  }, [selected])
   
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
@@ -34,8 +45,11 @@ export default function CalendarScreen() {
       }
     }
   })
-  const onSaveEvent = () => {
+  const onSaveEvent = async () => {
     const newEvent: Event = {name: eventName, desc : eventDesc};
+    const blobName = `${selected}-${Date.now()}.json`;
+
+    await uploadEvent(blobName, JSON.stringify(newEvent));
 
     setEvents(prevEvents => {
       const existingEvents = prevEvents[selected] || [];
