@@ -8,9 +8,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "build": "npx expo export --platform web --output-dir dist && cp staticwebapp.config.json dist/ || true"
+  },
+  "engines": {
+    "node": "22.x"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.29.1",
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",

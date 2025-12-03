@@ -28,30 +28,36 @@ Expo (https://expo.dev)
 
 ### Installing 
 
-During early development, the app will not be available on the App store or Play Store. The app must be installed through the git repository and installed within an emulator.  
+During early development, the app will not be available on the App store or Play Store. The app must be installed through the git repository and installed within an emulator or Expo GO mobile environment.  
 
 Requirements for Installation: 
 
 React Native CLI 
 
+Node.js
+
+Expo CLI
+
 For Android install - Android Studio 
 
 For IOS install – Xcode 
 
+OPTIONAL: Expo GO Mobile App
+
 
 ### Step 1: Clone the Repository  
 
-git clone https://github.com/dyeam05/CS3203-GroupJ-Project
+git clone https://github.com/GroupJ-CS3202/CS3203-GroupJ-Project
 
 ### Step 2: Install dependencies 
 
-npm install or yarn install 
+In Terminal:
 
-### Step 3: Start Metro bundler 
+cd into StudentLife directory
 
-npx react-native start 
+npx expo install
 
-### Step 4: Installing Calendar package
+### Step 3: Installing Calendar package
 
 Go to the terminal and
 
@@ -64,6 +70,11 @@ If using Yarn:
 $ yarn add react-native-calendars
 
 RN (React Native) Calendars is implemented in JavaScript, so no native module is required. 
+
+### Step 4: Start Metro bundler
+
+npx expo start 
+
 ### Executing Program 
 
 The build process slightly differs for IOS and Android. 
@@ -80,11 +91,11 @@ If installing within Android: npx react-native run-android
 
 If encountering issues while setting up the project: 
 
-Ensure all prerequisites are installed (Node.js, npm or yarn, Android Studio/Xcode) 
+Ensure all prerequisites are installed (Node.js, npm or yarn, Android Studio/Xcode, Expo) 
 
 Try reinstalling dependencies 
 
-Refer to React Native Documentation for setup help.  
+Refer to React Native, Expo, or NPM Documentation for setup help.  
 
 ## Authors  
 
