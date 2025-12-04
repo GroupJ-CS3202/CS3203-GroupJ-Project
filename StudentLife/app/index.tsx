@@ -55,7 +55,7 @@ export default function HomeScreen() {
         {/* RIGHT SIDEBAR: EVENTS ------------------------------------------ */}
         <View
           style={{
-            width: 300, // fixed width sidebar
+            width: '50%', // replaced width with a percentage value to allow for better scaling on different devices
             borderLeftWidth: 2,
             borderColor: "#aaa",
             padding: 10,
