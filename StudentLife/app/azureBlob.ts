@@ -1,5 +1,5 @@
-
-/*import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
+/*
+import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
 import {CEvent} from "./calendar";
 
 const connectionString = process.env.REACT_APP_AZURE_STORAGE_CONNECTION_STRING!;
@@ -34,15 +34,6 @@ export async function downloadEvents(date: string): Promise<CEvent[]> {
     return events;
 }
 
-async function streamToString(readableStream: NodeJS.ReadableStream | undefined): Promise<string> {
-    if (!readableStream) return "";
-    return new Promise((resolve, reject) => {
-        const chunks: string[] = [];
-        readableStream.on("data", (data: any) => chunks.push(data.toString()));
-        readableStream.on("end", () => resolve(chunks.join("")));
-        readableStream.on("error", reject);
-    });
-}
 
 export async function deleteEvent(blobName: string){
     try{
@@ -53,4 +44,18 @@ export async function deleteEvent(blobName: string){
     } catch(err){
         console.error("Delete failed:",err);
     }
+}
+
+export async function editEvent(blobName: string, newContent: any){
+    await uploadEvent(blobName, JSON.stringify(newContent));
+}
+
+async function streamToString(readableStream: NodeJS.ReadableStream | undefined): Promise<string> {
+    if (!readableStream) return "";
+    return new Promise((resolve, reject) => {
+        const chunks: string[] = [];
+        readableStream.on("data", (data: any) => chunks.push(data.toString()));
+        readableStream.on("end", () => resolve(chunks.join("")));
+        readableStream.on("error", reject);
+    });
 }*/

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-//import { uploadEvent, downloadEvents, deleteEvent } from './azureBlob';
+//import { uploadEvent, downloadEvents, deleteEvent, editEvent } from './azureBlob';
 import { useEffect } from 'react';
 
 export interface CEvent{
