@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { uploadEvent, downloadEvents, deleteEvent } from './azureBlob';
+//import { uploadEvent, downloadEvents, deleteEvent } from './azureBlob';
 import { useEffect } from 'react';
 
 export interface CEvent{
@@ -24,14 +24,14 @@ export default function CalendarScreen() {
 
   const[events, setEvents] = useState<EventsState>({});
 
-  useEffect(() => {
+  /*useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
       const loaded = await downloadEvents(selected);
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
-  }, [selected])
+  }, [selected])*/
   
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
@@ -50,7 +50,7 @@ export default function CalendarScreen() {
     const blobName = `${selected}-${Date.now()}.json`;
     const newEvent: CEvent = {name: eventName, desc : eventDesc, blobName: blobName};
 
-    await uploadEvent(blobName, JSON.stringify(newEvent));
+    //await uploadEvent(blobName, JSON.stringify(newEvent));
     setEvents(prevEvents => {
       const existingEvents = prevEvents[selected] || [];
       return {
@@ -65,23 +65,23 @@ export default function CalendarScreen() {
       };
     
     const onDeleteEvent = async(blobName: string) => {
-      await deleteEvent(blobName);
+      //await deleteEvent(blobName);
 
       setEvents(prev => ({
         ...prev,
         [selected]:prev[selected].filter(e => e.blobName !== blobName)
       }));
-    
+    }
     
 
   return (
     <ScrollView>
-      <Calendar //TODO: send date to backend function to create const/object to display event
+      <Calendar 
       current = {today}
       onDayPress = {(day) => {
-        console.log (day);  //log date to console
-        setSelected(day.dateString);  //marks date as selected
-        setAddEventDisabled(false); //enables add event button
+        console.log (day);  
+        setSelected(day.dateString);  
+        setAddEventDisabled(false); 
       }}
 
       markedDates={marked}
@@ -89,9 +89,8 @@ export default function CalendarScreen() {
       <View style={styles.eventBtn}>
         <Button
           title="+ Add Event" 
-          onPress={() => {setModalVisible(true);}}  //opens add event dialog
-          disabled={addEventDisabled} //determines if button is disabled
-          
+          onPress={() => {setModalVisible(true);}} 
+          disabled={addEventDisabled} 
           />
       </View>
       {selected ? (
@@ -154,7 +153,7 @@ const styles = StyleSheet.create ({
   Modal: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100     //This is a rather silly way to center the add event box. Work on fixing this later
+    paddingTop: 100    
   },
 
   modalContainer: {
@@ -226,4 +225,4 @@ const styles = StyleSheet.create ({
     textAlign: 'center',
     paddingVertical: 10,
   }
-});}
+});

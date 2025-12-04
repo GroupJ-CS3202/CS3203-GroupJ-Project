@@ -1,4 +1,5 @@
-import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
+
+/*import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
 import {CEvent} from "./calendar";
 
 const connectionString = process.env.REACT_APP_AZURE_STORAGE_CONNECTION_STRING!;
@@ -52,4 +53,4 @@ export async function deleteEvent(blobName: string){
     } catch(err){
         console.error("Delete failed:",err);
     }
-}
+}*/
