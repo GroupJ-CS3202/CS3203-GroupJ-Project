@@ -16,9 +16,9 @@ interface EventsState{
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
 
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState(today);
   const [modalVisible, setModalVisible] = useState(false);
-  const [addEventDisabled, setAddEventDisabled] = useState(true);
+  const [addEventDisabled, setAddEventDisabled] = useState(selected === '' ? true:false);
   const [eventName, setEventText] = useState('');
   const [eventDesc, setEventDesc] = useState('');
   const [editMode, setEditMode] = useState(false);
