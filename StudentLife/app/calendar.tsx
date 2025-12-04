@@ -1,36 +1,39 @@
 import React, { useState } from 'react';
-import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
+import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { uploadEvent, downloadEvents } from './azureBlob';
+//import { uploadEvent, downloadEvents, deleteEvent, editEvent } from './azureBlob';
 import { useEffect } from 'react';
 
-interface Event{
+export interface CEvent{
   name: string;
   desc: string;
+  blobName: string;
 }
 
 interface EventsState{
-  [dataString: string]: Event[];
+  [dataString: string]: CEvent[];
 }
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
 
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState(today);
   const [modalVisible, setModalVisible] = useState(false);
-  const [addEventDisabled, setAddEventDisabled] = useState(true);
+  const [addEventDisabled, setAddEventDisabled] = useState(selected === '' ? true:false);
   const [eventName, setEventText] = useState('');
   const [eventDesc, setEventDesc] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const[events, setEvents] = useState<EventsState>({});
 
-  useEffect(() => {
+  /*useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
       const loaded = await downloadEvents(selected);
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
-  }, [selected])
+  }, [selected])*/
   
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
@@ -46,32 +49,69 @@ export default function CalendarScreen() {
     }
   })
   const onSaveEvent = async () => {
-    const newEvent: Event = {name: eventName, desc : eventDesc};
+    if (!selected) return;
+
     const blobName = `${selected}-${Date.now()}.json`;
+    const newEvent: CEvent = {name: eventName, desc : eventDesc, blobName: blobName};
 
-    await uploadEvent(blobName, JSON.stringify(newEvent));
-
+    //await uploadEvent(blobName, JSON.stringify(newEvent));
     setEvents(prevEvents => {
       const existingEvents = prevEvents[selected] || [];
+      
+      if(editMode && editIndex !== null){
+        const updatedEvents = [...existingEvents];
+        updatedEvents[editIndex] = {
+          ...updatedEvents[editIndex],
+          name: eventName,
+          desc: eventDesc
+        }
       return {
         ...prevEvents,
         [selected]: [...existingEvents, newEvent]
       };
-    });
-    setModalVisible(false);
-    setEventText('');
-    setEventDesc('');
-    console.log('Saved Event:', newEvent.name, 'for date:', selected);
-  };
+    }else {
+      return { ...prevEvents, [selected]: [...existingEvents, newEvent] };
+    }
+  });
+  setModalVisible(false);
+  setEventText('');
+  setEventDesc('');
+  setEditMode(false);
+  setEditIndex(null);
+  
+  console.log('Saved Event:', eventName, 'for date:', selected);
+};
+    
+    const onDeleteEvent = async(blobName: string) => {
+      //await deleteEvent(blobName);
+
+      setEvents(prev => ({
+        ...prev,
+        [selected]:prev[selected].filter(e => e.blobName !== blobName)
+      }));
+    }
+    
+    const onEditEvent = (index : number) =>{
+      // await editEvent(blobName);
+      if (!selectedDayEvents[index]) return;
+      const event = selectedDayEvents[index];
+
+      setEventText(event.name);
+      setEventDesc(event.desc);
+      setEditMode(true);
+      setEditIndex(index);
+      setModalVisible(true);
+
+    }
 
   return (
     <ScrollView>
-      <Calendar //TODO: send date to backend function to create const/object to display event
+      <Calendar 
       current = {today}
       onDayPress = {(day) => {
-        console.log (day);  //log date to console
-        setSelected(day.dateString);  //marks date as selected
-        setAddEventDisabled(false); //enables add event button
+        console.log (day);  
+        setSelected(day.dateString);  
+        setAddEventDisabled(false); 
       }}
 
       markedDates={marked}
@@ -79,9 +119,8 @@ export default function CalendarScreen() {
       <View style={styles.eventBtn}>
         <Button
           title="+ Add Event" 
-          onPress={() => {setModalVisible(true);}}  //opens add event dialog
-          disabled={addEventDisabled} //determines if button is disabled
-          
+          onPress={() => {setModalVisible(true);}} 
+          disabled={addEventDisabled} 
           />
       </View>
       {selected ? (
@@ -92,16 +131,25 @@ export default function CalendarScreen() {
                 <View key = {index} style = {styles.eventItem}>
                   <Text style = {styles.eventNameText}>**{event.name}**</Text>
                   <Text style = {styles.eventDescText}>{event.desc}</Text>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                    <TouchableOpacity onPress={() => onEditEvent(index)} style={styles.eventActionBtn}>
+                      <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onDeleteEvent(event.blobName)} style={styles.eventActionBtn}>
+                      <Text style={{ color: 'red' }}>Delete</Text>
+                   </TouchableOpacity>
                 </View>
-              ))
-            ):(
-              <Text style = {styles.noEventText}></Text>
-            )}
-            </View>
+              </View>
+            ))
           ) : (
-            <View style = {styles.eventListContainer}>
-              <Text style = {styles.noEventText}></Text>
-            </View>
+            <Text style={styles.noEventText}>No events</Text>
+          )}
+        </View>
+      ) : (
+        <View style={styles.eventListContainer}>
+          <Text style={styles.noEventText}>No date selected</Text>
+        </View>
       )}
       
 
@@ -139,7 +187,7 @@ const styles = StyleSheet.create ({
   Modal: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100     //This is a rather silly way to center the add event box. Work on fixing this later
+    paddingTop: 100    
   },
 
   modalContainer: {
@@ -210,5 +258,26 @@ const styles = StyleSheet.create ({
     color: 'gray',
     textAlign: 'center',
     paddingVertical: 10,
+  },eventActions: {
+    flexDirection: 'row',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  smallButton: {
+    backgroundColor: '#007aff',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  eventActionBtn:{
+    marginLeft: 5,
+    marginRight: 5
   }
-});
+})
