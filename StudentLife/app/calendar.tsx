@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
+import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 //import { uploadEvent, downloadEvents, deleteEvent } from './azureBlob';
 import { useEffect } from 'react';
@@ -21,6 +21,8 @@ export default function CalendarScreen() {
   const [addEventDisabled, setAddEventDisabled] = useState(true);
   const [eventName, setEventText] = useState('');
   const [eventDesc, setEventDesc] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const[events, setEvents] = useState<EventsState>({});
 
@@ -47,22 +49,38 @@ export default function CalendarScreen() {
     }
   })
   const onSaveEvent = async () => {
+    if (!selected) return;
+
     const blobName = `${selected}-${Date.now()}.json`;
     const newEvent: CEvent = {name: eventName, desc : eventDesc, blobName: blobName};
 
     //await uploadEvent(blobName, JSON.stringify(newEvent));
     setEvents(prevEvents => {
       const existingEvents = prevEvents[selected] || [];
+      
+      if(editMode && editIndex !== null){
+        const updatedEvents = [...existingEvents];
+        updatedEvents[editIndex] = {
+          ...updatedEvents[editIndex],
+          name: eventName,
+          desc: eventDesc
+        }
       return {
         ...prevEvents,
         [selected]: [...existingEvents, newEvent]
       };
-    });
-      setModalVisible(false);
-      setEventText('');
-      setEventDesc('');
-      console.log('Saved Event:', newEvent.name, 'for date:', selected);
-      };
+    }else {
+      return { ...prevEvents, [selected]: [...existingEvents, newEvent] };
+    }
+  });
+  setModalVisible(false);
+  setEventText('');
+  setEventDesc('');
+  setEditMode(false);
+  setEditIndex(null);
+  
+  console.log('Saved Event:', eventName, 'for date:', selected);
+};
     
     const onDeleteEvent = async(blobName: string) => {
       //await deleteEvent(blobName);
@@ -73,6 +91,18 @@ export default function CalendarScreen() {
       }));
     }
     
+    const onEditEvent = (index : number) =>{
+      // await editEvent(blobName);
+      if (!selectedDayEvents[index]) return;
+      const event = selectedDayEvents[index];
+
+      setEventText(event.name);
+      setEventDesc(event.desc);
+      setEditMode(true);
+      setEditIndex(index);
+      setModalVisible(true);
+
+    }
 
   return (
     <ScrollView>
@@ -102,20 +132,24 @@ export default function CalendarScreen() {
                   <Text style = {styles.eventNameText}>**{event.name}**</Text>
                   <Text style = {styles.eventDescText}>{event.desc}</Text>
 
-                  <Button
-                  title = "Delete"
-                  color = "red"
-                  onPress = { () => onDeleteEvent(event.blobName)} />
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                    <TouchableOpacity onPress={() => onEditEvent(index)} style={styles.eventActionBtn}>
+                      <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onDeleteEvent(event.blobName)} style={styles.eventActionBtn}>
+                      <Text style={{ color: 'red' }}>Delete</Text>
+                   </TouchableOpacity>
                 </View>
-              ))
-            ):(
-              <Text style = {styles.noEventText}></Text>
-            )}
-            </View>
+              </View>
+            ))
           ) : (
-            <View style = {styles.eventListContainer}>
-              <Text style = {styles.noEventText}></Text>
-            </View>
+            <Text style={styles.noEventText}>No events</Text>
+          )}
+        </View>
+      ) : (
+        <View style={styles.eventListContainer}>
+          <Text style={styles.noEventText}>No date selected</Text>
+        </View>
       )}
       
 
@@ -224,5 +258,26 @@ const styles = StyleSheet.create ({
     color: 'gray',
     textAlign: 'center',
     paddingVertical: 10,
+  },eventActions: {
+    flexDirection: 'row',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  smallButton: {
+    backgroundColor: '#007aff',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  eventActionBtn:{
+    marginLeft: 5,
+    marginRight: 5
   }
-});
+})
