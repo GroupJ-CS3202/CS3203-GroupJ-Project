@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { uploadEvent, downloadEvents } from './azureBlob';
+import { uploadEvent, downloadEvents, deleteEvent } from './azureBlob';
 import { useEffect } from 'react';
 
-interface Event{
+export interface CEvent{
   name: string;
   desc: string;
+  blobName: string;
 }
 
 interface EventsState{
-  [dataString: string]: Event[];
+  [dataString: string]: CEvent[];
 }
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
@@ -46,11 +47,10 @@ export default function CalendarScreen() {
     }
   })
   const onSaveEvent = async () => {
-    const newEvent: Event = {name: eventName, desc : eventDesc};
     const blobName = `${selected}-${Date.now()}.json`;
+    const newEvent: CEvent = {name: eventName, desc : eventDesc, blobName: blobName};
 
     await uploadEvent(blobName, JSON.stringify(newEvent));
-
     setEvents(prevEvents => {
       const existingEvents = prevEvents[selected] || [];
       return {
@@ -58,11 +58,21 @@ export default function CalendarScreen() {
         [selected]: [...existingEvents, newEvent]
       };
     });
-    setModalVisible(false);
-    setEventText('');
-    setEventDesc('');
-    console.log('Saved Event:', newEvent.name, 'for date:', selected);
-  };
+      setModalVisible(false);
+      setEventText('');
+      setEventDesc('');
+      console.log('Saved Event:', newEvent.name, 'for date:', selected);
+      };
+    
+    const onDeleteEvent = async(blobName: string) => {
+      await deleteEvent(blobName);
+
+      setEvents(prev => ({
+        ...prev,
+        [selected]:prev[selected].filter(e => e.blobName !== blobName)
+      }));
+    
+    
 
   return (
     <ScrollView>
@@ -92,6 +102,11 @@ export default function CalendarScreen() {
                 <View key = {index} style = {styles.eventItem}>
                   <Text style = {styles.eventNameText}>**{event.name}**</Text>
                   <Text style = {styles.eventDescText}>{event.desc}</Text>
+
+                  <Button
+                  title = "Delete"
+                  color = "red"
+                  onPress = { () => onDeleteEvent(event.blobName)} />
                 </View>
               ))
             ):(
@@ -211,4 +226,4 @@ const styles = StyleSheet.create ({
     textAlign: 'center',
     paddingVertical: 10,
   }
-});
+});}
