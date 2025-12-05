@@ -8,6 +8,9 @@
     "scheme": "studentlife",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra":{
+      "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=...;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.dyeam05.StudentLife",

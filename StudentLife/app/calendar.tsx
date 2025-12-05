@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-//import { uploadEvent, downloadEvents, deleteEvent, editEvent } from './azureBlob';
+//import { addBlob, deleteBlob, getBlob, listEventsByDate  } from './azureBlob';
 import { useEffect } from 'react';
 
 export interface CEvent{
@@ -29,7 +29,7 @@ export default function CalendarScreen() {
   useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
-      const loaded = await downloadEvents(selected);
+      const loaded = await listEventsByDate(selected);
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
@@ -89,7 +89,7 @@ export default function CalendarScreen() {
 };
     
     const onDeleteEvent = async(blobName: string) => {
-      //await deleteEvent(blobName);
+      //await deleteBlob(blobName);
 
       setEvents(prev => ({
         ...prev,
@@ -98,8 +98,8 @@ export default function CalendarScreen() {
     }
     
     const onEditEvent = (index : number) =>{
+      if (!selectedDayEvents[index]) return;
       const event = selectedDayEvents[index];
-      if(!event) return;
 
       setEventText(event.name);
       setEventDesc(event.desc);

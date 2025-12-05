@@ -59,3 +59,59 @@ async function streamToString(readableStream: NodeJS.ReadableStream | undefined)
         readableStream.on("error", reject);
     });
 }*/
+/*
+import { BlobServiceClient } from "@azure/storage-blob";
+import Constants from "expo-constants";
+
+export const AZURE_STORAGE_CONNECTION_STRING =
+  Constants.manifest?.extra?.AZURE_STORAGE_CONNECTION_STRING ?? "";
+
+const connectionString = AZURE_STORAGE_CONNECTION_STRING;
+const containerName = "events";
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+export async function addBlob(blobName: string, content: string) {
+  try {
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    await blockBlobClient.upload(content, Buffer.byteLength(content), {
+      blobHTTPHeaders: { blobContentType: "application/json" }
+    });
+
+    return { success: true, url: blockBlobClient.url };
+  } catch (err: any) {
+    console.error("addBlob error:", err.message);
+    throw err;
+  }
+}
+export async function deleteBlob(blobName: string) {
+  const blobClient = containerClient.getBlockBlobClient(blobName);
+  await blobClient.deleteIfExists();
+  return { success: true, deleted: blobName };
+}
+export async function getBlob(blobName: string) {
+  const blobClient = containerClient.getBlockBlobClient(blobName);
+
+  const download = await blobClient.download();
+  const chunks: Buffer[] = [];
+
+  for await (const chunk of download.readableStreamBody!) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+
+  const text = Buffer.concat(chunks).toString("utf8");
+  return JSON.parse(text);
+}
+export async function listEventsByDate(date: string) {
+  const events: any[] = [];
+
+  for await (const blob of containerClient.listBlobsFlat()) {
+    if (blob.name.startsWith(date)) {
+      const event = await getBlob(blob.name);
+      events.push({ ...event, blobName: blob.name });
+    }
+  }
+  return events;
+}*/
