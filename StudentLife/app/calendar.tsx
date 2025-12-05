@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-//import { addBlob, deleteBlob, getBlob, listEventsByDate  } from './azureBlob';
+import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
 import { useEffect } from 'react';
-
-export interface CEvent{
-  name: string;
-  desc: string;
-  blobName: string;
-}
 
 interface EventsState{
   [dataString: string]: CEvent[];
@@ -25,7 +19,7 @@ export default function CalendarScreen() {
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const[events, setEvents] = useState<EventsState>({});
-/*
+
   useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
@@ -33,8 +27,8 @@ export default function CalendarScreen() {
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
-  }, [selected])*/
-  
+  }, [selected])
+
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
     [selected]: { selected: true, disableTouchEvent: true}
@@ -49,53 +43,65 @@ export default function CalendarScreen() {
     }
   })
   const onSaveEvent = async () => {
-    if (!selected) return;
+    if (!selected || eventName.trim() === '') return;
 
     const existingEvents = events[selected] || [];
     
-    if(editMode && editIndex !== null){
-        const target = existingEvents[editIndex];
+    try {
+        if(editMode && editIndex !== null){
+            const target = existingEvents[editIndex];
 
-        const updatedEvent: CEvent = {
-          ...target,
-          name: eventName,
-          desc: eventDesc
+            const updatedEvent: CEvent = {
+              ...target,
+              name: eventName,
+              desc: eventDesc
+            }
+            
+            await editEvent(target.blobName, updatedEvent);
+
+            setEvents(prev => {
+              const copy = [...existingEvents];
+              copy[editIndex] = updatedEvent;
+              return { ...prev, [selected]: copy };
+            });
+
+        } else {
+          const blobName = `${selected}-${Date.now()}.json`;
+          const newEvent: CEvent = { name: eventName, desc: eventDesc, blobName };
+
+          await addBlob(newEvent);
+
+          setEvents(prev => ({
+            ...prev,
+            [selected]: [...existingEvents, newEvent]
+          }));
         }
-        //await editEvent(target.blobName, updatedEvent);
+    } catch (error) {
+        console.error(`Failed to ${editMode ? 'edit' : 'add'} event:`, error);
+        alert(`event failed to ${editMode ? 'edit' : 'save'}.`);
+        return; 
+    }
 
-    setEvents(prev => {
-      const copy = [...existingEvents];
-      copy[editIndex] = updatedEvent;
-      return { ...prev, [selected]: copy };
-    });
-
-  } else {
-    const blobName = `${selected}-${Date.now()}.json`;
-    const newEvent: CEvent = { name: eventName, desc: eventDesc, blobName };
-
-    //await uploadEvent(blobName, JSON.stringify(newEvent));
-
-    setEvents(prev => ({
-      ...prev,
-      [selected]: [...existingEvents, newEvent]
-    }));
-  }
-
-  setModalVisible(false);
-  setEventText('');
-  setEventDesc('');
-  setEditMode(false);
-  setEditIndex(null);
-};
+    setModalVisible(false);
+    setEventText('');
+    setEventDesc('');
+    setEditMode(false);
+    setEditIndex(null);
+  };
     
     const onDeleteEvent = async(blobName: string) => {
-      //await deleteBlob(blobName);
+      try{
+        await deleteBlob(blobName);
 
       setEvents(prev => ({
         ...prev,
         [selected]:prev[selected].filter(e => e.blobName !== blobName)
       }));
+      }catch (error) {
+      console.error("Failed to delete event:", error);
+      alert("Failed to delete event.");
     }
+  }
     
     const onEditEvent = (index : number) =>{
       if (!selectedDayEvents[index]) return;

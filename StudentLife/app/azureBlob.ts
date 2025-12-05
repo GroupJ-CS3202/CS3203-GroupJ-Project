@@ -115,3 +115,93 @@ export async function listEventsByDate(date: string) {
   }
   return events;
 }*/
+
+export interface CEvent {
+  name: string;
+  desc: string;
+  blobName: string;
+}
+//for backend server
+const BASE_URL = 'http://localhost:3001/api'; 
+
+export async function addBlob(event: CEvent): Promise<void> {
+  try {
+    const response = await fetch(`${BASE_URL}/event/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(event),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('addBlob failed. server response:', response.status, errorText);
+      throw new Error(`Failed to save event. Status: ${response.status}`);
+    }
+    console.log('Event successfully saved as blob:', event.blobName);
+  } catch (error) {
+    console.error('addBlob error occurred:', error);
+    throw error;
+  }
+}
+
+
+export async function editEvent(blobName: string, updatedEvent: CEvent): Promise<void> {
+  try {
+    const response = await fetch(`${BASE_URL}/event/edit/${blobName}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedEvent),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('editEvent failed. server response:', response.status, errorText);
+      throw new Error(`Failed to update event. Status: ${response.status}`);
+    }
+    console.log('Event successfully updated:', blobName);
+  } catch (error) {
+    console.error('editEvent error occurs:', error);
+    throw error;
+  }
+}
+
+export async function deleteBlob(blobName: string): Promise<void> {
+  try {
+    const response = await fetch(`${BASE_URL}/event/delete/${blobName}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('deleteBlob failed. server response:', response.status, errorText);
+      throw new Error(`Failed to delete blob. Status: ${response.status}`);
+    }
+    console.log('Blob successfully deleted:', blobName);
+  } catch (error) {
+    console.error('deleteBlob error occurs:', error);
+    throw error;
+  }
+}
+
+
+export async function listEventsByDate(dateString: string): Promise<CEvent[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/events/${dateString}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('listEventsByDate failed. server response:', response.status, errorText);
+      return []; 
+    }
+    
+    const events: CEvent[] = await response.json();
+    console.log(`Events loaded for ${dateString}:`, events.length);
+    return events;
+
+  } catch (error) {
+    console.error('listEventsByDate error occur. empty list return:', error);
+    return []; 
+  }
+}
