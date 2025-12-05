@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "sl-api",
   "version": "1.0.0",
   "description": "",
   "main": "src/functions/*.js",
@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
-    "mssql": "^12.1.1"
+    "mssql": "^12.1.1", 
+    "openai": "latest"
   },
   "devDependencies": {
     "azure-functions-core-tools": "^4.x"
