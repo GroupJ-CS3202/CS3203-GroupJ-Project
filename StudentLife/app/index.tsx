@@ -4,8 +4,8 @@ import {StatusBar} from 'expo-status-bar';
 export default function HomeScreen() {
   const userName = "User"; // placeholder — replace with actual user later
 
+  //You will see this everywhere for now. This determines whether elements will be displayed in light or dark mode.
   const colorScheme = useColorScheme();
-
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
@@ -72,6 +72,8 @@ export default function HomeScreen() {
   );
 }
 
+//You will also see this everywhere. This is the stylesheet for all of the main UI elements. this is WIP and needs to be moved to theme.ts file.
+//CSS is fun sometimes
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
@@ -101,17 +103,17 @@ const styles = StyleSheet.create({
     fontSize: 35,
     margin: 10,
     padding: 10,
-    fontWeight: "600"
+    fontWeight: "bold"
   },
   headerText: {
     fontSize: 22,
     marginBottom: 10,
-    fontWeight: "600"
+    fontWeight: "bold"
   },
   eventText: {
     fontSize: 25,
     marginBottom: 10,
-    fontWeight: "600",
+    fontWeight: "bold",
     marginLeft: 10
   },
   text: {
@@ -119,21 +121,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   lightContainer: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
+    borderColor: '#151718'
   },
   darkContainer: {
-    backgroundColor: '#222021',
-    borderColor: '#f9f9f9',
+    backgroundColor: '#151718',
+    borderColor: '#ECEDEE',
   },
   lightThemeText: {
-    color: '#222021',
+    color: '#11181C',
   },
   darkThemeText: {
-    color: '#f9f9f9',
+    color: '#ECEDEE',
   },
 });
 
-
+//formerly used styles that need to be re-implemented.
 /*
             style={{
               flex: 1,

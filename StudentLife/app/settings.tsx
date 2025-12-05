@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { View, Text, Switch, TouchableOpacity, ScrollView, Appearance} from "react-native";
+import { View, Text, Switch, TouchableOpacity, ScrollView, Appearance, useColorScheme} from "react-native";
 
 export default function SettingsScreen() {
+
+    const colorScheme = useColorScheme();
+    const themeTextStyle = colorScheme === 'light' ? '#11181C' : '#ECEDEE';
+    const themeContainerStyle = colorScheme === 'light' ? '#fff' : '#151718';
+
   const [notifications, setNotifications] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -9,6 +14,7 @@ export default function SettingsScreen() {
     alert(`${label} placeholder – feature not implemented yet`);
   };
 
+  //changes color scheme to dark or light mode, depending on state of dark mode switch. I am very happy with this thing, but, it needs some fixing.
   const setDarkMode = () => {
     setIsDarkMode(previousState => !previousState);
     if(isDarkMode === false) {
@@ -21,11 +27,11 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: "white" }}
+      style={{ flex: 1, backgroundColor: themeContainerStyle }}
       contentContainerStyle={{ padding: 20 }}
     >
       {/* HEADER */}
-      <Text style={{ fontSize: 28, fontWeight: "bold", marginBottom: 20 }}>
+      <Text style={{ fontSize: 28, fontWeight: "bold", marginBottom: 20, color:themeTextStyle }}>
         Settings
       </Text>
 
@@ -45,7 +51,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("Edit Profile")}
       >
-        <Text style={{ fontSize: 18 }}>Edit Profile</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>Edit Profile</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -56,7 +62,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("Change Password")}
       >
-        <Text style={{ fontSize: 18 }}>Change Password</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>Change Password</Text>
       </TouchableOpacity>
 
       {/* APP PREFERENCES ---------------------------------------------------- */}
@@ -81,7 +87,7 @@ export default function SettingsScreen() {
           paddingVertical: 12,
         }}
       >
-        <Text style={{ fontSize: 18 }}>Dark Mode</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>Dark Mode</Text>
         <Switch onValueChange={setDarkMode} value={isDarkMode}/>
       </View>
 
@@ -94,7 +100,7 @@ export default function SettingsScreen() {
           paddingVertical: 12,
         }}
       >
-        <Text style={{ fontSize: 18 }}>Notifications</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle }}>Notifications</Text>
         <Switch value={notifications} onValueChange={setNotifications} />
       </View>
 
@@ -119,7 +125,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("Permissions")}
       >
-        <Text style={{ fontSize: 18 }}>Permissions</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>Permissions</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -130,7 +136,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("Data Usage")}
       >
-        <Text style={{ fontSize: 18 }}>Data Usage</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle }}>Data Usage</Text>
       </TouchableOpacity>
 
       {/* ABOUT ------------------------------------------------------------- */}
@@ -154,7 +160,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("About App")}
       >
-        <Text style={{ fontSize: 18 }}>About This App</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>About This App</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -165,7 +171,7 @@ export default function SettingsScreen() {
         }}
         onPress={() => placeholderPress("Contact Support")}
       >
-        <Text style={{ fontSize: 18 }}>Contact Support</Text>
+        <Text style={{ fontSize: 18, color:themeTextStyle}}>Contact Support</Text>
       </TouchableOpacity>
 
       {/* LOG OUT BUTTON ---------------------------------------------------- */}
