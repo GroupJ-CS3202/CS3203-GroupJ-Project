@@ -32,6 +32,9 @@ export default function HomeScreen() {
                 <Text style={[styles.headerText, themeTextStyle]}>
                   Bulletin
                 </Text>
+                <Text style={[styles.text, themeTextStyle]}>
+                  News and other relevant info goes here.
+                </Text>
             </View>
           </View>
 
@@ -90,8 +93,9 @@ const styles = StyleSheet.create({
     margin: 15
   },
   centerTextContainer: {
-    alignContent: 'center',
+    alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
   },
   scrollView: {
     borderWidth: 2,
