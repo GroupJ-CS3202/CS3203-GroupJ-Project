@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     margin: 15
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   scrollView: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 10,
     padding: 15,
     margin: 10
