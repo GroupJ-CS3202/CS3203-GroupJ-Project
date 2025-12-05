@@ -1,13 +1,23 @@
 import { useState } from "react";
-import { View, Text, Switch, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Switch, TouchableOpacity, ScrollView, Appearance} from "react-native";
 
 export default function SettingsScreen() {
-  const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const placeholderPress = (label: string) => {
     alert(`${label} placeholder – feature not implemented yet`);
   };
+
+  const setDarkMode = () => {
+    setIsDarkMode(previousState => !previousState);
+    if(isDarkMode === false) {
+      Appearance.setColorScheme('dark');
+    }
+    else {
+      Appearance.setColorScheme('light')
+    }
+  }
 
   return (
     <ScrollView
@@ -72,7 +82,7 @@ export default function SettingsScreen() {
         }}
       >
         <Text style={{ fontSize: 18 }}>Dark Mode</Text>
-        <Switch value={darkMode} onValueChange={setDarkMode} />
+        <Switch onValueChange={setDarkMode} value={isDarkMode}/>
       </View>
 
       {/* NOTIFICATIONS */}
