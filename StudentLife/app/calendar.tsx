@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-//import { uploadEvent, downloadEvents, deleteEvent, editEvent } from './azureBlob';
+import { uploadEvent, downloadEvents, deleteEvent, editEvent } from './azureBlob';
 import { useEffect } from 'react';
 
 export interface CEvent{
@@ -26,14 +26,14 @@ export default function CalendarScreen() {
 
   const[events, setEvents] = useState<EventsState>({});
 
-  /*useEffect(() => {
+  useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
       const loaded = await downloadEvents(selected);
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
-  }, [selected])*/
+  }, [selected])
   
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
@@ -51,39 +51,45 @@ export default function CalendarScreen() {
   const onSaveEvent = async () => {
     if (!selected) return;
 
-    const blobName = `${selected}-${Date.now()}.json`;
-    const newEvent: CEvent = {name: eventName, desc : eventDesc, blobName: blobName};
+    const existingEvents = events[selected] || [];
+    
+    if(editMode && editIndex !== null){
+        const target = existingEvents[editIndex];
 
-    //await uploadEvent(blobName, JSON.stringify(newEvent));
-    setEvents(prevEvents => {
-      const existingEvents = prevEvents[selected] || [];
-      
-      if(editMode && editIndex !== null){
-        const updatedEvents = [...existingEvents];
-        updatedEvents[editIndex] = {
-          ...updatedEvents[editIndex],
+        const updatedEvent: CEvent = {
+          ...target,
           name: eventName,
           desc: eventDesc
         }
-      return {
-        ...prevEvents,
-        [selected]: [...existingEvents, newEvent]
-      };
-    }else {
-      return { ...prevEvents, [selected]: [...existingEvents, newEvent] };
-    }
-  });
+        //await editEvent(target.blobName, updatedEvent);
+
+    setEvents(prev => {
+      const copy = [...existingEvents];
+      copy[editIndex] = updatedEvent;
+      return { ...prev, [selected]: copy };
+    });
+
+  } else {
+    const blobName = `${selected}-${Date.now()}.json`;
+    const newEvent: CEvent = { name: eventName, desc: eventDesc, blobName };
+
+    //await uploadEvent(blobName, JSON.stringify(newEvent));
+
+    setEvents(prev => ({
+      ...prev,
+      [selected]: [...existingEvents, newEvent]
+    }));
+  }
+
   setModalVisible(false);
   setEventText('');
   setEventDesc('');
   setEditMode(false);
   setEditIndex(null);
-  
-  console.log('Saved Event:', eventName, 'for date:', selected);
 };
     
     const onDeleteEvent = async(blobName: string) => {
-      //await deleteEvent(blobName);
+      await deleteEvent(blobName);
 
       setEvents(prev => ({
         ...prev,
@@ -92,9 +98,8 @@ export default function CalendarScreen() {
     }
     
     const onEditEvent = (index : number) =>{
-      // await editEvent(blobName);
-      if (!selectedDayEvents[index]) return;
       const event = selectedDayEvents[index];
+      if(!event) return;
 
       setEventText(event.name);
       setEventDesc(event.desc);
