@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
+//import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
 import { useEffect } from 'react';
-
+export interface CEvent {
+  name: string;
+  desc: string;
+  blobName: string;
+}
 interface EventsState{
   [dataString: string]: CEvent[];
 }
@@ -19,7 +23,7 @@ export default function CalendarScreen() {
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const[events, setEvents] = useState<EventsState>({});
-
+/*
   useEffect(() => {
     async function loadEvents(){
       if (!selected) return;
@@ -27,7 +31,7 @@ export default function CalendarScreen() {
       setEvents(prev => ({ ...prev, [selected]: loaded} ));
     }
     loadEvents();
-  }, [selected])
+  }, [selected])*/
 
   const selectedDayEvents = events[selected] || [];
   const marked: any = {
@@ -57,7 +61,7 @@ export default function CalendarScreen() {
               desc: eventDesc
             }
             
-            await editEvent(target.blobName, updatedEvent);
+            //await editEvent(target.blobName, updatedEvent);
 
             setEvents(prev => {
               const copy = [...existingEvents];
@@ -69,7 +73,7 @@ export default function CalendarScreen() {
           const blobName = `${selected}-${Date.now()}.json`;
           const newEvent: CEvent = { name: eventName, desc: eventDesc, blobName };
 
-          await addBlob(newEvent);
+          //await addBlob(newEvent);
 
           setEvents(prev => ({
             ...prev,
@@ -91,7 +95,7 @@ export default function CalendarScreen() {
     
     const onDeleteEvent = async(blobName: string) => {
       try{
-        await deleteBlob(blobName);
+        //await deleteBlob(blobName);
 
       setEvents(prev => ({
         ...prev,

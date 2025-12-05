@@ -115,7 +115,7 @@ export async function listEventsByDate(date: string) {
   }
   return events;
 }*/
-
+/*
 export interface CEvent {
   name: string;
   desc: string;
@@ -204,4 +204,4 @@ export async function listEventsByDate(dateString: string): Promise<CEvent[]> {
     console.error('listEventsByDate error occur. empty list return:', error);
     return []; 
   }
-}
+}*/
