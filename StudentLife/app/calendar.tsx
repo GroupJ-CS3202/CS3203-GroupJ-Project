@@ -3,6 +3,11 @@ import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, Touchable
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 //import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
 import { useEffect } from 'react';
+
+
+//TODO: add dark mode
+
+export interface CEvent{
 export interface CEvent {
   name: string;
   desc: string;
