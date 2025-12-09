@@ -6,8 +6,6 @@ import { useEffect } from 'react';
 
 
 //TODO: add dark mode
-
-export interface CEvent{
 export interface CEvent {
   name: string;
   desc: string;
