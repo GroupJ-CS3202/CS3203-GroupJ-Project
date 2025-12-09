@@ -10,7 +10,7 @@ export default function SettingsScreen() {
     <View
       style={[styles.pageContainer, themeContainerStyle]}
     >
-      <Text style={[styles.titleText, themeTextStyle]}>AI Helper Screen</Text>
+      <Text style={[styles.titleText, themeTextStyle]}>AI Study Helper</Text>
     </View>
   );
 }
