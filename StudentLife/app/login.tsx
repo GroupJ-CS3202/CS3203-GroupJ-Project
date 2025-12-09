@@ -9,10 +9,19 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  useColorScheme
 } from 'react-native';
 import { router } from 'expo-router';
 
 const LoginPage = () => {
+
+  const colorScheme = useColorScheme();
+
+
+  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
+  const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
+
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -34,15 +43,15 @@ const LoginPage = () => {
 
   return (
     <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, themeContainerStyle]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0} 
     >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>Login</Text>
+      <View style={[styles.innerContainer, themeContainerStyle]}>
+        <Text style={[styles.title, themeTextStyle]}>Login</Text>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, themeContainerStyle]}
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
@@ -52,7 +61,7 @@ const LoginPage = () => {
         />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, themeContainerStyle]}
           placeholder="Password"
           value={password}
           onChangeText={setPassword}
@@ -60,7 +69,7 @@ const LoginPage = () => {
           returnKeyType="done"
         />
 
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, themeContainerStyle]}>
           <Button
             title="Login"
             onPress={handleLogin}
@@ -68,7 +77,7 @@ const LoginPage = () => {
           />
         </View>
 
-        <View style={styles.options}>
+        <View style={[styles.options, themeContainerStyle]}>
           <TouchableOpacity onPress={handleSignUp}>
             <Text style={styles.link}>Sign Up</Text>
           </TouchableOpacity>
@@ -128,6 +137,20 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 14,
     fontWeight: '500',
+  },
+  lightContainer: {
+    backgroundColor: '#fff',
+    borderColor: '#151718'
+  },
+  darkContainer: {
+    backgroundColor: '#151718',
+    borderColor: '#ECEDEE',
+  },
+  lightThemeText: {
+    color: '#11181C',
+  },
+  darkThemeText: {
+    color: '#ECEDEE',
   },
 });
 

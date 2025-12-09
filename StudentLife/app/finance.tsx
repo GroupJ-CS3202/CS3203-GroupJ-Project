@@ -1,6 +1,11 @@
-import { View, Text, StyleSheet, useColorScheme} from "react-native";
+import { View, Text, StyleSheet, useColorScheme, Button} from "react-native";
+import {useState} from 'react';
 
 export default function SettingsScreen() {
+    const userName = "User"; // placeholder — replace with actual user later
+    const income = 5000; // placeholder
+    const [expenses, setExpenses] = useState(); //total expenses value. can be modified with button press.
+
     const colorScheme = useColorScheme();
   
     const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
@@ -9,7 +14,22 @@ export default function SettingsScreen() {
     <View
       style={[styles.pageContainer, themeContainerStyle]}
     >
-      <Text style={[styles.titleText, themeTextStyle]}>Finance Screen</Text>
+      <Text style={[styles.titleText, themeTextStyle]}>{userName}'s Budget</Text>
+      <View style={[styles.container, themeContainerStyle]}>
+        <Text style={[styles.headerText, themeTextStyle]}>Spending Money: $</Text>
+        <Button title="+ Add Spending Money"></Button>
+      </View>
+      
+      <View style={[styles.container, themeContainerStyle]}>
+        <Text style={[styles.headerText, themeTextStyle]}>Monthly Income: ${income}</Text>
+        <Text style={[styles.headerText, themeTextStyle]}>Income Breakdown:</Text>
+        <Button title="+ Add Income"></Button>
+      </View>
+      <View style={[styles.container, themeContainerStyle]}>
+        <Text style={[styles.headerText, themeTextStyle]}>Monthly Expenses:</Text>
+        <Text style={[styles.headerText, themeTextStyle]}>Expenses Breakdown:</Text>
+        <Button title="+ Add Expenses"></Button>
+      </View>
     </View>
   );
 }

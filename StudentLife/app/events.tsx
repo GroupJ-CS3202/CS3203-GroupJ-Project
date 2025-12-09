@@ -1,4 +1,4 @@
-import { View, Text, useColorScheme, StyleSheet} from "react-native";
+import { View, Text, useColorScheme, StyleSheet, ScrollView} from "react-native";
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -6,13 +6,30 @@ export default function SettingsScreen() {
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
+  //placeholder campus events
+  const events = ["CS/ECE Game Night", "OU Football Vs. Alabama Crimson Tide", "Christmas Carol @ University Theater"];
 
 
   return (
     <View
       style={[styles.contentContainer, themeContainerStyle]}
     >
-      <Text style={[styles.titleText, themeTextStyle]}>Events Screen</Text>
+      <Text style={[styles.titleText, themeTextStyle]}>Campus Events</Text>
+        <ScrollView style={[styles.scrollView, themeContainerStyle]}>
+          {events.map((event, index) => (
+            <Text
+              key={index}
+              style={[styles.headerText, themeTextStyle]}
+            >
+              • {event}
+            </Text>
+          ))}
+
+          {/* If no events */}
+          {events.length === 0 && (
+            <Text style={{ color: "#777" }}>No events yet.</Text>
+          )}
+        </ScrollView>
     </View>
   );
 }
