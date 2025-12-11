@@ -1,9 +1,31 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import {useColorScheme} from "react-native";
 
 export default function TabLayout() {
+
+  const colorScheme = useColorScheme();
+  const themeTextStyle = colorScheme === 'light' ? '#11181C' : '#ECEDEE';
+  const themeContainerStyle = colorScheme === 'light' ? '#fff' : '#151718';
+
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
+    //sets the color for the tab bar and nav bar.
+    //THIS TOOK FOREVER TO FIGURE OUT. IDK WHY IT TOOK ME SO LONG TO FIGURE OUT HOW TO CHANGE THE FUCKING COLOR OF THE TOP AND BOTTOM BARS
+    <Tabs screenOptions={{ 
+            tabBarActiveTintColor: 'blue', 
+            tabBarStyle: {
+              backgroundColor: themeContainerStyle
+            },
+            headerStyle: {
+              backgroundColor: themeContainerStyle,
+            },
+            headerTitleStyle: {
+              color: themeTextStyle
+            },
+            animation: 'shift'
+
+          }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -46,6 +68,21 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
         }}
       />
+      <Tabs.Screen //for test
+        name = "login"
+        options = {{
+          title: 'Login',
+          tabBarIcon: ({color})=> <FontAwesome size = {28} name = "key" color = {color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="signup"
+        options={{
+          title: 'Sign Up',
+          href: null, 
+          headerShown: true, 
+          
+        }}/>
     </Tabs>
   );
 }

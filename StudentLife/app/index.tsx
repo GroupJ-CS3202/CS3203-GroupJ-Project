@@ -1,79 +1,63 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Appearance, useColorScheme, StyleSheet} from "react-native";
+import {StatusBar} from 'expo-status-bar';
 
 export default function HomeScreen() {
   const userName = "User"; // placeholder — replace with actual user later
+
+  //You will see this everywhere for now. This determines whether elements will be displayed in light or dark mode.
+  const colorScheme = useColorScheme();
+  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
+  const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
   // Placeholder events
   const events = ["Meeting at 3 PM", "Project deadline", "Team standup"];
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={[styles.pageContainer, themeContainerStyle]}>
       {/* MAIN LAYOUT: Left content + right sidebar */}
-      <View style={{ flexDirection: "row", flex: 1 }}>
+      <View style={[styles.contentContainer, themeContainerStyle]}>
         {/* LEFT SIDE ------------------------------------------------------ */}
-        <View style={{ flex: 1, padding: 20 }}>
+        <View style={[styles.contentContainer, themeContainerStyle]}>
           {/* WELCOME TEXT */}
-          <Text style={{ fontSize: 28, fontWeight: "bold", marginBottom: 20 }}>
-            Welcome {userName}
+          <Text style={[styles.titleText, themeTextStyle]}>
+            Welcome, {userName}
           </Text>
 
-          {/* MAIN EMPTY WINDOW (placeholder box) */}
+          {/* MAIN WINDOW (potential bulletin board box) */}
           <View
-            style={{
-              flex: 1,
-              borderWidth: 2,
-              borderColor: "#999",
-              borderRadius: 10,
-              marginBottom: 20,
-              backgroundColor: "#f9f9f9",
-            }}
+            style={[styles.container, themeContainerStyle]}
           >
-            {/* Empty for now */}
+            {/* Bulletin title text */}
+            <View style={[styles.centerTextContainer, themeContainerStyle]}> 
+                <Text style={[styles.headerText, themeTextStyle]}>
+                  Bulletin
+                </Text>
+                <Text style={[styles.text, themeTextStyle]}>
+                  News and other relevant info goes here.
+                </Text>
+            </View>
           </View>
 
           {/* AI OVERVIEW --------------------------------------------------- */}
-          <View
-            style={{
-              padding: 15,
-              borderWidth: 2,
-              borderColor: "#999",
-              borderRadius: 10,
-              marginBottom: 20,
-              backgroundColor: "#f1f7ff",
-            }}
-          >
-            <Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 10 }}>
+          <View style={[styles.container, themeContainerStyle]}>
+            <Text style={[styles.headerText, themeTextStyle]}>
               AI Overview
             </Text>
-            <Text style={{ fontSize: 16, color: "#555" }}>
+            <Text style={[styles.text, themeTextStyle]}>
               AI summary for the week will appear here.
               {"\n"}(Placeholder content for now.)
             </Text>
           </View>
-        </View>
-
-        {/* RIGHT SIDEBAR: EVENTS ------------------------------------------ */}
-        <View
-          style={{
-            width: 300, // fixed width sidebar
-            borderLeftWidth: 2,
-            borderColor: "#aaa",
-            padding: 10,
-            backgroundColor: "#fafafa",
-          }}
-        >
-          <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}>
-            Events
+          
+          <Text style={[styles.eventText, themeTextStyle]}>
+            Upcomming Events
           </Text>
 
-          <ScrollView>
+          <ScrollView style={[styles.scrollView, themeContainerStyle]}>
             {events.map((event, index) => (
               <Text
                 key={index}
-                style={{
-                  fontSize: 16,
-                  marginBottom: 8,
-                }}
+                style={[styles.text, themeTextStyle]}
               >
                 • {event}
               </Text>
@@ -86,6 +70,99 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
       </View>
+      <StatusBar />
     </View>
   );
 }
+
+//You will also see this everywhere. This is the stylesheet for all of the main UI elements. this is WIP and needs to be moved to theme.ts file.
+//CSS is fun sometimes
+const styles = StyleSheet.create({
+  pageContainer: {
+    flex: 1,
+  },
+  contentContainer:{ 
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    margin: 15
+  },
+  centerTextContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  scrollView: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 15,
+    margin: 10
+  },
+  titleText: {
+    fontSize: 35,
+    margin: 10,
+    padding: 10,
+    fontWeight: "bold"
+  },
+  headerText: {
+    fontSize: 22,
+    marginBottom: 10,
+    fontWeight: "bold"
+  },
+  eventText: {
+    fontSize: 25,
+    marginBottom: 10,
+    fontWeight: "bold",
+    marginLeft: 10
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  lightContainer: {
+    backgroundColor: '#fff',
+    borderColor: '#151718'
+  },
+  darkContainer: {
+    backgroundColor: '#151718',
+    borderColor: '#ECEDEE',
+  },
+  lightThemeText: {
+    color: '#11181C',
+  },
+  darkThemeText: {
+    color: '#ECEDEE',
+  },
+});
+
+//formerly used styles that need to be re-implemented.
+/*
+            style={{
+              flex: 1,
+              borderWidth: 2,
+              borderColor: "#999",
+              borderRadius: 10,
+              marginBottom: 20,
+              backgroundColor: "#f9f9f9",
+            }}
+
+            style={{
+              padding: 15,
+              borderWidth: 2,
+              borderColor: "#999",
+              borderRadius: 10,
+              marginBottom: 20,
+              backgroundColor: "#f1f7ff",
+            }}
+
+
+            style={{ fontSize: 20, fontWeight: "600", marginBottom: 10 }}
+            { fontSize: 16, color: "#555" }
+            style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}
+            {fontSize: 16, marginBottom: 8,}
+*/

@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.dyeam05.StudentLife",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "adaptiveIcon": {
