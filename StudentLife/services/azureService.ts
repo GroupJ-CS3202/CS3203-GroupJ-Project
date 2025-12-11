@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:7071/api/ai-completion";
+const API_URL = "/api/ai-completion";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -14,6 +14,8 @@ export async function callAi(history: ChatMessage[]) {
     role: m.role,
     content: m.content,
   }));
+
+
 
   const res = await fetch(API_URL, {
     method: "POST",
