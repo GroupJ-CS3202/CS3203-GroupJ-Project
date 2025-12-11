@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, Appearance, useColorScheme, StyleSheet} from "react-native";
 import {StatusBar} from 'expo-status-bar';
+import {router} from 'expo-router';
 
 export default function HomeScreen() {
   const userName = "User"; // placeholder — replace with actual user later
@@ -139,30 +140,3 @@ const styles = StyleSheet.create({
     color: '#ECEDEE',
   },
 });
-
-//formerly used styles that need to be re-implemented.
-/*
-            style={{
-              flex: 1,
-              borderWidth: 2,
-              borderColor: "#999",
-              borderRadius: 10,
-              marginBottom: 20,
-              backgroundColor: "#f9f9f9",
-            }}
-
-            style={{
-              padding: 15,
-              borderWidth: 2,
-              borderColor: "#999",
-              borderRadius: 10,
-              marginBottom: 20,
-              backgroundColor: "#f1f7ff",
-            }}
-
-
-            style={{ fontSize: 20, fontWeight: "600", marginBottom: 10 }}
-            { fontSize: 16, color: "#555" }
-            style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}
-            {fontSize: 16, marginBottom: 8,}
-*/

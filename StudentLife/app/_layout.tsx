@@ -10,7 +10,7 @@ export default function TabLayout() {
 
   return (
     //sets the color for the tab bar and nav bar.
-    //THIS TOOK FOREVER TO FIGURE OUT. IDK WHY IT TOOK ME SO LONG TO FIGURE OUT HOW TO CHANGE THE FUCKING COLOR OF THE TOP AND BOTTOM BARS
+    //THIS TOOK FOREVER TO FIGURE OUT. IDK WHY IT TOOK ME SO LONG TO FIGURE OUT HOW TO CHANGE THE COLOR OF THE TOP AND BOTTOM BARS
     <Tabs screenOptions={{ 
             tabBarActiveTintColor: 'blue', 
             tabBarStyle: {

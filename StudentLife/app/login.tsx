@@ -17,7 +17,6 @@ const LoginPage = () => {
 
   const colorScheme = useColorScheme();
 
-
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
@@ -28,6 +27,7 @@ const LoginPage = () => {
   const handleLogin = () => {
     if (username === 'test' && password === '1234') {
       Alert.alert('Login Successful', 'Welcome!');
+      router.replace('/'); //sends user back to index page upon successful login
     } else {
       Alert.alert('Login Failed', 'Invalid username or password.');
     }
@@ -58,6 +58,7 @@ const LoginPage = () => {
           autoCapitalize="none"
           keyboardType="email-address"
           returnKeyType="next"
+          
         />
 
         <TextInput
@@ -140,11 +141,13 @@ const styles = StyleSheet.create({
   },
   lightContainer: {
     backgroundColor: '#fff',
-    borderColor: '#151718'
+    borderColor: '#151718',
+    color: '#11181c'
   },
   darkContainer: {
     backgroundColor: '#151718',
     borderColor: '#ECEDEE',
+    color: '#ECEDEE'
   },
   lightThemeText: {
     color: '#11181C',
