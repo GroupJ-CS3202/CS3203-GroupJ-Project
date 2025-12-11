@@ -1,7 +1,7 @@
 const { app } = require('@azure/functions');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('./db');
+const { sql, poolPromise } = require('./db'); 
 
 app.http('login', {
   methods: ['POST'],
@@ -19,10 +19,15 @@ app.http('login', {
     }
 
     try {
-      const result = await pool.query(
-        'SELECT UserID, Email, Password FROM Users WHERE Email = $1', //SELECT id, email, password_hash FROM users WHERE email = $1
-        [email]
-      );
+      const pool = await poolPromise; 
+    
+      const result = await pool
+        .request()
+        .input("Email", sql.NVarChar, email)
+        .query(`
+                SELECT UserID, Name, Email, Password
+                FROM Users
+                WHERE Email = @Email`);
 
       const user = result.rows[0];
 
