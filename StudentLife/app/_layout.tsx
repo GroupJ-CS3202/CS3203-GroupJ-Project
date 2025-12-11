@@ -1,88 +1,31 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import {useColorScheme} from "react-native";
+import { Stack } from 'expo-router';
 
-export default function TabLayout() {
+import { SessionProvider, useSession} from '../ctx';
+import { SplashScreenController } from '../splash';
 
-  const colorScheme = useColorScheme();
-  const themeTextStyle = colorScheme === 'light' ? '#11181C' : '#ECEDEE';
-  const themeContainerStyle = colorScheme === 'light' ? '#fff' : '#151718';
+export default function Root() {
+  // Set up the auth context and render your layout inside of it.
+  return (
+    <SessionProvider>
+      <SplashScreenController />
+      <RootNavigator />
+    </SessionProvider>
+  );
+}
+
+// Create a new component that can access the SessionProvider context later.
+function RootNavigator() {
+  const { session } = useSession();
 
   return (
-    //sets the color for the tab bar and nav bar.
-    //THIS TOOK FOREVER TO FIGURE OUT. IDK WHY IT TOOK ME SO LONG TO FIGURE OUT HOW TO CHANGE THE COLOR OF THE TOP AND BOTTOM BARS
-    <Tabs screenOptions={{ 
-            tabBarActiveTintColor: 'blue', 
-            tabBarStyle: {
-              backgroundColor: themeContainerStyle
-            },
-            headerStyle: {
-              backgroundColor: themeContainerStyle,
-            },
-            headerTitleStyle: {
-              color: themeTextStyle
-            },
-            animation: 'shift'
+    <Stack>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(app)" options={{headerShown: false}}/>
+      </Stack.Protected>
 
-          }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: 'Calendar',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="calendar" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name = "events"
-        options = {{
-          title: 'Events',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="star" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name = "finance"
-        options = {{
-          title: 'Finance',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="dollar" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="AI"
-        options={{
-          title: 'AI Helper',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="check-square-o" color={color} />,
-        }}
-      />      
-      <Tabs.Screen
-        name = "settings"
-        options = {{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
-        }}
-      />
-      <Tabs.Screen //for test
-        name = "login"
-        options = {{
-          title: 'Login',
-          tabBarIcon: ({color})=> <FontAwesome size = {28} name = "key" color = {color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="signup"
-        options={{
-          title: 'Sign Up',
-          href: null, 
-          headerShown: true, 
-          
-        }}/>
-    </Tabs>
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="login" options={{headerShown: false}}/>
+      </Stack.Protected>
+    </Stack>
   );
 }

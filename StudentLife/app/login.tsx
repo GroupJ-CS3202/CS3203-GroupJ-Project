@@ -12,6 +12,7 @@ import {
   useColorScheme
 } from 'react-native';
 import { router } from 'expo-router';
+import { useSession } from '../ctx';
 
 const LoginPage = () => {
 
@@ -24,8 +25,11 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const { signIn } = useSession();
+
   const handleLogin = () => {
     if (username === 'test' && password === '1234') {
+      signIn();
       Alert.alert('Login Successful', 'Welcome!');
       router.replace('/'); //sends user back to index page upon successful login
     } else {

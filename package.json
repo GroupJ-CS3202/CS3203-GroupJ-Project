@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "expo-secure-store": "^15.0.8",
     "react-native-calendars": "^1.1313.0"
   }
 }
