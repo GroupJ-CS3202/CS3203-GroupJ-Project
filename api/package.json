@@ -9,8 +9,11 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
-    "mssql": "^12.1.1", 
-    "openai": "latest"
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mssql": "^12.1.1",
+    "openai": "latest",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "azure-functions-core-tools": "^4.x"
