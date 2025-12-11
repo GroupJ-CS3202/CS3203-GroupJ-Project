@@ -20,7 +20,7 @@ app.http('login', {
 
     try {
       const result = await pool.query(
-        '',
+        'SELECT UserID, Email, Password FROM Users WHERE Email = $1', //SELECT id, email, password_hash FROM users WHERE email = $1
         [email]
       );
 
