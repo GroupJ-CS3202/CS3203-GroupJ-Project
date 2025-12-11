@@ -12,6 +12,7 @@ import {
   useColorScheme
 } from 'react-native';
 import { router } from 'expo-router';
+import { login as loginRequest, saveAuth} from '../services/authService';
 
 const LoginPage = () => {
 
@@ -22,15 +23,37 @@ const LoginPage = () => {
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (username === 'test' && password === '1234') {
-      Alert.alert('Login Successful', 'Welcome!');
-    } else {
-      Alert.alert('Login Failed', 'Invalid username or password.');
+  const handleLogin = async () => {
+    if (!email || !password)
+    {
+        Alert.alert('Login Failed', 'Email and password are required.');
+        return;
     }
+
+    setLoading(true);
+
+    try 
+    {
+      const {token, user} = await loginRequest(email, password);
+
+      Alert.alert('Login Successful', 'Welcome, ${user.name || user.email}!')
+      
+      router.replace('/calendar');
+    }
+    catch (err : any) 
+    {
+      console.error('Login error:', err);
+      Alert.alert('Login Failed', err.message ?? 'Login failed')
+    }
+    finally 
+    {
+      setLoading(false);
+    }
+
   };
 
   const handleSignUp = () => {
@@ -52,9 +75,9 @@ const LoginPage = () => {
 
         <TextInput
           style={[styles.input, themeContainerStyle]}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
           returnKeyType="next"

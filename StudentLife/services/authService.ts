@@ -1,7 +1,7 @@
 const TOKEN_KEY = "authToken";
 const USER_KEY = "authUser";
 
-const API_BASE = "";
+const API_BASE = ""; //left this here for if we want to test locally.
 
 export interface User 
 {
@@ -16,7 +16,7 @@ export interface LoginResult
     user : User;
 }
 
-export async function login (email : string, password : string): Promise<LoginResult> //fetches a authentication token from the api
+export async function login (email : string, password : string): Promise<LoginResult> //fetches an authentication token from the api
 {
     const res = await fetch('${API_BASE}/api/login', {
         method : "POST", 
