@@ -13,8 +13,9 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
-import { getEventsInRange, BackendEvent } from "@/services/sqlFetchService"; // adjust path
+import { getEventsInRange, BackendEvent } from "@/services/sqlFetchService"; 
 import { insertEvent } from "@/services/sqlInsertService";
+import { deleteEvent } from "@/services/sqlDeleteService"; 
 export interface CalendarEvent extends BackendEvent {}
 
 interface EventsState {
@@ -163,16 +164,22 @@ export default function CalendarScreen() {
   };
 
   const onDeleteEvent = async (id: string) => {
-    try {
-      setEvents((prev) => ({
-        ...prev,
-        [selected]: prev[selected].filter((e) => e.id !== id),
-      }));
-    } catch (error) {
-      console.error("Failed to delete event:", error);
-      alert("Failed to delete event.");
-    }
-  };
+  try {
+    // Call the backend to delete the event
+    await deleteEvent({ eventId: id });
+
+    // Remove the event from local state
+    setEvents((prev) => ({
+      ...prev,
+      [selected]: prev[selected].filter((e) => e.id !== id),
+    }));
+
+    console.log(`Event ${id} deleted successfully`);
+  } catch (error: any) {
+    console.error("Failed to delete event:", error);
+    alert(error?.message || "Failed to delete event.");
+  }
+};
 
   const onEditEvent = (index: number) => {
     if (!selectedDayEvents[index]) return;

@@ -5,3 +5,4 @@ require("./login")
 require("./auth-check");
 require("./SqlFetchRepository")
 require("./SqlInsertRepository")
+require("./SqlDeleteRepository")
