@@ -76,10 +76,10 @@ export default function HomeScreen() {
           </View>
 
           {/* AI OVERVIEW --------------------------------------------------- */}
+          <Text style={[styles.eventText, themeTextStyle]}>
+            AI Overview
+          </Text>
           <View style={[styles.container, themeContainerStyle]}>
-            <Text style={[styles.headerText, themeTextStyle]}>
-              AI Overview
-            </Text>
             <Text style={[styles.text, themeTextStyle]}>
               {summary}
             </Text>
