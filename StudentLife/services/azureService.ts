@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:7071/api/ai-completion";
+const API_URL = "/api/ai-completion";
 import { BackendEvent, EventsRangeResult, getEventsInRange } from "./sqlFetchService";
 
 type ChatMessage = {

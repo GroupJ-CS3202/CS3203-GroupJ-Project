@@ -29,7 +29,7 @@ export async function getEventsInRange(
 
   const token = authState.token;
 
-  const res = await fetch("http://localhost:7071/api/getEventsForRange", {
+  const res = await fetch("/api/getEventsForRange", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
