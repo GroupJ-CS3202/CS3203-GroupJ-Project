@@ -31,7 +31,7 @@ const LoginPage = () => {
     (async () => {
       const auth = await verifyAuthWithServer();
       if (auth) {
-        router.replace('/home');
+        router.replace('../(tabs)/home');
       }
     })();
   }, []);
@@ -54,7 +54,7 @@ const LoginPage = () => {
 
       Alert.alert('Login Successful', 'Welcome, ${user.name || user.email}!')
       
-      router.replace('/home');
+      router.replace('../(tabs)/home');
     }
     catch (err : any) 
     {

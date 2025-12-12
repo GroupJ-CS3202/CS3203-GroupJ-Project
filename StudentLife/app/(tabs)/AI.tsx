@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   ListRenderItem,   // ⬅ import this
 } from "react-native";
-import { callAi } from "../services/azureService";
+import { callAi } from "../../services/azureService";
 
 type Message = {
   id: string;

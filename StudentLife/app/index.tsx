@@ -15,11 +15,11 @@ export default function Index() {
     })();
   }, []);
 
-  if (!ready) return null; // or a loading component
+  if (!ready) return null; // splash/loading if you want
 
   if (!authed) {
-    return <Redirect href="/login" />; //go login
+    return <Redirect href="/login" />;
   }
 
-  return <Redirect href="/home" />; //go home
+  return <Redirect href="../(tabs)/home" />;
 }
