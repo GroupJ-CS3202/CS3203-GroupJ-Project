@@ -18,7 +18,7 @@ export interface LoginResult
 
 export async function login (email : string, password : string): Promise<LoginResult> //fetches an authentication token from the api
 {
-    const res = await fetch('/api/login', { //http://localhost:7071/api/login
+    const res = await fetch('http://localhost:7071/api/login', { //http://localhost:7071/api/login
         method : "POST",
         headers: {
             "Content-Type": "application/json", 
@@ -30,7 +30,7 @@ export async function login (email : string, password : string): Promise<LoginRe
 
     if (!res.ok) 
     {
-        const msg = (data && (data.error || data.message)) || 'Login failed with status ${res.status}'; 
+        const msg = (data && (data.error || data.message)) || 'Login failed with status {res.status}'; 
         throw new Error (msg);
     }
 
@@ -112,7 +112,7 @@ export async function verifyAuthWithServer(): Promise<LoginResult | null> {
   if (!auth) return null;
 
   try {
-    const res = await fetch('/api/auth-check', { //http://localhost:7071/api/auth-check
+    const res = await fetch('http://localhost:7071/api/auth-check', { //http://localhost:7071/api/auth-check
       method: 'GET',
       headers: {
         Authorization: `Bearer ${auth.token}`,

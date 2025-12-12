@@ -45,9 +45,11 @@ app.http("authCheck", {
         return {
           status: 401,
           headers: corsHeaders,
-          jsonBody: { error: "Invalid or missing token." },
+          jsonBody: { error: "Invalid or missing token. Code: " +  err.code},
         };
       }
+
+      
 
       return {
         status: 401,
