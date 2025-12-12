@@ -1,7 +1,7 @@
 // app/index.tsx
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { verifyAuthWithServer } from '../services/authService'; // adjust path
+import { verifyAuthWithServer } from '../services/authService';
 
 export default function Index() {
   const [ready, setReady] = useState(false);
@@ -15,7 +15,7 @@ export default function Index() {
     })();
   }, []);
 
-  if (!ready) return null; // splash/loading if you want
+  if (!ready) return null;
 
   if (!authed) {
     return <Redirect href="/login" />;
