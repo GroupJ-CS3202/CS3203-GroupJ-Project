@@ -1,7 +1,7 @@
 const TOKEN_KEY = "authToken";
 const USER_KEY = "authUser";
 
-const API_BASE = ""; //left this here for if we want to test locally.
+const API_BASE = "http://localhost:8081/"; //left this here for if we want to test locally.
 
 export interface User 
 {
