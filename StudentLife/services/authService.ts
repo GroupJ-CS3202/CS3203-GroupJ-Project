@@ -18,7 +18,7 @@ export interface LoginResult
 
 export async function login (email : string, password : string): Promise<LoginResult> //fetches an authentication token from the api
 {
-    const res = await fetch('/api/login', {
+    const res = await fetch('/api/login', { //http://localhost:7071/api/login
         method : "POST",
         headers: {
             "Content-Type": "application/json", 
@@ -106,14 +106,44 @@ export function getAuthToken () : string | null
     }
 }
 
-export function extractBearerToken (req: any) 
-{
-    const header = 
-        req.headers.get('Authorization');
-    if (!header) return null;
+export async function verifyAuthWithServer(): Promise<LoginResult | null> {
+  if (typeof window === 'undefined' || !window.localStorage) return null;
 
-    const[scheme, token] = header.split(' ');
-    if (scheme !== 'Bearer' || !token) return null;
+  const auth = loadAuth();
+  if (!auth) return null;
 
-    return token;
+  try {
+    const res = await fetch('/api/auth-check', { //http://localhost:7071/api/auth-check
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (res.status === 401) {
+      clearAuth();
+      return null;
+    }
+
+    if (!res.ok) {
+      console.warn('[authService] auth-check failed:', res.status, data);
+      return null;
+    }
+
+    if (!data?.user) {
+      console.warn('[authService] auth-check returned no user');
+      return null;
+    }
+
+    return {
+      token: auth.token,
+      user: data.user as User,
+    };
+  } catch (err) {
+    console.warn('[authService] verifyAuthWithServer error:', err);
+    return null;
+  }
 }
+

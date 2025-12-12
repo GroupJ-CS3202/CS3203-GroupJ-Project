@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   useColorScheme
 } from 'react-native';
 import { router } from 'expo-router';
-import { login as loginRequest, saveAuth} from '../services/authService';
+import { login as loginRequest, saveAuth, verifyAuthWithServer} from '../services/authService';
 
 const LoginPage = () => {
 
@@ -26,6 +26,17 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const auth = await verifyAuthWithServer();
+      if (auth) {
+        router.replace('/home');
+      }
+    })();
+  }, []);
+
+
 
   const handleLogin = async () => {
     if (!email || !password)
@@ -43,7 +54,7 @@ const LoginPage = () => {
 
       Alert.alert('Login Successful', 'Welcome, ${user.name || user.email}!')
       
-      router.replace('/calendar');
+      router.replace('/home');
     }
     catch (err : any) 
     {

@@ -27,9 +27,17 @@ export default function TabLayout() {
           }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Index',
+          href: null, 
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
         }}
       />
@@ -72,6 +80,7 @@ export default function TabLayout() {
         name = "login"
         options = {{
           title: 'Login',
+          href: null, 
           tabBarIcon: ({color})=> <FontAwesome size = {28} name = "key" color = {color} />,
         }}
       />
