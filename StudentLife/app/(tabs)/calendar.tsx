@@ -214,8 +214,8 @@ export default function CalendarScreen() {
           markingType="multi-dot"
           style={themeContainerStyle}
           theme={{
-            backgroundColor: "#151718",
-            calendarBackground: "#151718",
+            backgroundColor: "#ffffffff",
+            calendarBackground: "#ffffffff",
           }}
         />
       </View>
