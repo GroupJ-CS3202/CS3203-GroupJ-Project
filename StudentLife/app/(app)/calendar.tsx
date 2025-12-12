@@ -3,6 +3,7 @@ import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, Touchable
 import { Calendar, LocaleConfig} from 'react-native-calendars';
 //import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
 import { MarkedDates } from "react-native-calendars/src/types";
+import {encodeSpecialCharacters} from "../../SpecialCharacterConversion";
 
 export interface CEvent {
   name: string;
