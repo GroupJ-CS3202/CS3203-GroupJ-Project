@@ -4,17 +4,45 @@ const jwt = require("jsonwebtoken");
 const { sql, poolPromise } = require("./db");
 
 app.http("login", {
-  methods: ["POST"],
+  methods: ["POST", "OPTIONS"],       // 👈 include OPTIONS
   authLevel: "anonymous",
   route: "login",
   handler: async (req, context) => {
-    const body = await req.json();
-    const { email, password } = body || {};
+    context.log("[login] Request:", req.method);
 
+    // CORS only for localhost:8081
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "http://localhost:8081",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    };
+
+    // Handle preflight
+    if (req.method === "OPTIONS") {
+      return {
+        status: 204,
+        headers: corsHeaders,
+      };
+    }
+
+    // Parse body
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return {
+        status: 400,
+        headers: corsHeaders,
+        jsonBody: { error: "Request body must be JSON." },
+      };
+    }
+
+    const { email, password } = body || {};
     if (!email || !password) {
       return {
         status: 400,
-        jsonBody: { error: "Email and password are required" },
+        headers: corsHeaders,
+        jsonBody: { error: "Email and password are required." },
       };
     }
 
@@ -32,10 +60,11 @@ app.http("login", {
 
       const user = result.recordset[0];
 
-      if (!user || !user.Password) {
+      if (!user) {
         return {
           status: 401,
-          jsonBody: { error: "Invalid credentials" },
+          headers: corsHeaders,
+          jsonBody: { error: "Invalid credentials." },
         };
       }
 
@@ -43,7 +72,8 @@ app.http("login", {
       if (!matches) {
         return {
           status: 401,
-          jsonBody: { error: "Invalid credentials" },
+          headers: corsHeaders,
+          jsonBody: { error: "Invalid credentials." },
         };
       }
 
@@ -55,6 +85,7 @@ app.http("login", {
 
       return {
         status: 200,
+        headers: corsHeaders,
         jsonBody: {
           token,
           user: {
@@ -65,10 +96,11 @@ app.http("login", {
         },
       };
     } catch (err) {
-      context.log("Login error:", err);
+      context.log("[login] error:", err);
       return {
         status: 500,
-        jsonBody: { error: "Login failed" },
+        headers: corsHeaders,
+        jsonBody: { error: "Login failed." },
       };
     }
   },

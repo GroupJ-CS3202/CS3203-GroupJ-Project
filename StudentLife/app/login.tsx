@@ -39,6 +39,7 @@ const LoginPage = () => {
     try 
     {
       const {token, user} = await loginRequest(email, password);
+      saveAuth(token, user);
 
       Alert.alert('Login Successful', 'Welcome, ${user.name || user.email}!')
       

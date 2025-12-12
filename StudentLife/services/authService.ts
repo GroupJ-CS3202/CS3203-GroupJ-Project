@@ -18,8 +18,8 @@ export interface LoginResult
 
 export async function login (email : string, password : string): Promise<LoginResult> //fetches an authentication token from the api
 {
-    const res = await fetch('${API_BASE}/api/login', {
-        method : "POST", 
+    const res = await fetch('/api/login', {
+        method : "POST",
         headers: {
             "Content-Type": "application/json", 
         },
@@ -60,7 +60,6 @@ export function saveAuth(token:string, user : User)
 }
 
 //attempts to read the user's saved authentication token form local storage on app startup
-
 export function loadAuth(): LoginResult | null 
 {
     try
