@@ -98,7 +98,6 @@ export function getAuthToken () : string | null
     try 
     {
         return localStorage.getItem(TOKEN_KEY);
-
     }
     catch 
     {
