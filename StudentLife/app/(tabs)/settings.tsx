@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { View, Text, Switch, TouchableOpacity, ScrollView, Appearance, useColorScheme} from "react-native";
+import { clearAuth } from "@/services/authService";
+import { router } from 'expo-router';
 
 export default function SettingsScreen() {
 
@@ -23,6 +25,12 @@ export default function SettingsScreen() {
     else {
       Appearance.setColorScheme('light')
     }
+  }
+
+  const logOut = () => 
+  {
+    clearAuth();
+    router.replace('/login')
   }
 
   return (
@@ -183,7 +191,7 @@ export default function SettingsScreen() {
           borderRadius: 8,
           alignItems: "center",
         }}
-        onPress={() => placeholderPress("Log Out")}
+        onPress={() => logOut()}
       >
         <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>
           Log Out
