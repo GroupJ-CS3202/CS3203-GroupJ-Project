@@ -105,3 +105,15 @@ export function getAuthToken () : string | null
         return null;
     }
 }
+
+export function extractBearerToken (req: any) 
+{
+    const header = 
+        req.headers.get('Authorization');
+    if (!header) return null;
+
+    const[scheme, token] = header.split(' ');
+    if (scheme !== 'Bearer' || !token) return null;
+
+    return token;
+}
