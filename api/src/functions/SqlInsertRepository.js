@@ -90,7 +90,7 @@ app.http("insertEvent", {
         };
       }
 
-      if(title.length > 128 || description.length > 255 || CalendarID.length != 36)
+      if(title.length > 128 || description.length > 255)
       {
         return {
           status: 400, 
