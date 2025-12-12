@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar, LocaleConfig} from 'react-native-calendars';
 //import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
-import { useEffect } from 'react';
+import { MarkedDates } from "react-native-calendars/src/types";
+
 
 
 //TODO: add dark mode
@@ -14,6 +15,7 @@ export interface CEvent {
 interface EventsState{
   [dataString: string]: CEvent[];
 }
+
 export default function CalendarScreen() {
   const today = new Date().toISOString().split('T')[0];
 
@@ -26,6 +28,50 @@ export default function CalendarScreen() {
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const[events, setEvents] = useState<EventsState>({});
+  const [markedDates, setMarkedDates] = useState({});
+
+
+//test dates
+const dates = ["2025-12-24", "2025-12-12", "2025-12-25", "2025-12-24"];
+
+
+useEffect(() => {
+    createMarkedDates(dates);
+  }, []); // run once on mount; change deps if dates change
+
+const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
+  const marked: MarkedDates = {};
+  const counts: Record<string, number> = {};
+
+  datesArray.forEach((d) => {
+    counts[d] = (counts[d] || 0) + 1;
+  });
+
+  Object.keys(counts).forEach((date) => {
+    const dots = [];
+    for (let i = 0; i < counts[date]; i++) {
+      dots.push({ key: `${date}-dot-${i}`, color: "red" });
+    }
+
+    marked[date] = { dots };
+  });
+
+  // ⬅️ Highlight selected day (even if no events)
+  if (selectedDate) {
+    marked[selectedDate] = {
+      ...(marked[selectedDate] || {}), // keep existing dots
+      selected: true,
+      selectedColor: "#00adf5",        // blue circle
+      selectedTextColor: "white"
+    };
+  }
+
+  setMarkedDates(marked);
+};
+
+
+
+
 /*
   useEffect(() => {
     async function loadEvents(){
@@ -37,9 +83,11 @@ export default function CalendarScreen() {
   }, [selected])*/
 
   const selectedDayEvents = events[selected] || [];
+
   const marked: any = {
     [selected]: { selected: true, disableTouchEvent: true}
   }
+
   Object.keys(events).forEach(date => {
     if (events[date].length>0){
       marked[date] = {
@@ -125,22 +173,25 @@ export default function CalendarScreen() {
   return (
     <ScrollView>
       <Calendar 
-      current = {today}
-      onDayPress = {(day) => {
-        console.log (day);  
-        setSelected(day.dateString);  
-        setAddEventDisabled(false); 
-      }}
+        current = {today}
+        onDayPress = {(day) => {
+          const date = day.dateString;
+          console.log (day);  
+          setSelected(day.dateString);  
+          setAddEventDisabled(false); 
+          createMarkedDates(dates, date);
+        }}
 
-      markedDates={marked}
+        markedDates={markedDates}
+        markingType='multi-dot'
       />
-      <View style={styles.eventBtn}>
-        <Button
-          title="+ Add Event" 
-          onPress={() => {setModalVisible(true);}} 
-          disabled={addEventDisabled} 
-          />
-      </View>
+        <View style={styles.eventBtn}>
+          <Button
+            title="+ Add Event" 
+            onPress={() => {setModalVisible(true);}} 
+            disabled={addEventDisabled} 
+            />
+        </View>
       {selected ? (
         <View style={styles.eventListContainer}>
           <Text style = {styles.eventListHeader}> Event List of {selected} </Text>
@@ -191,10 +242,10 @@ export default function CalendarScreen() {
               setEventDesc('');
               setModalVisible(false); 
               } } color="black"/>
-          </View>
-        </View> 
-      </View>
-    </Modal>
+            </View>
+          </View> 
+        </View>
+      </Modal>
     </ScrollView>
 
 
