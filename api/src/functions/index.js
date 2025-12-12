@@ -1,4 +1,4 @@
-require("./hello");
+require("./hello"); //This is as an entry point for azure functions. All 
 require("./register");
 require("./aiCompletion")
 require("./login")

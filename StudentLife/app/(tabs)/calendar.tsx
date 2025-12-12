@@ -1,227 +1,260 @@
-import React, { useState, useEffect} from 'react';
-import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, useColorScheme} from "react-native";
-import { Calendar, LocaleConfig} from 'react-native-calendars';
-//import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
+// StudentLife/app/calendar.tsx (or wherever your calendar screen lives)
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Modal,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
+import { Calendar } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
+import { getEventsInRange, BackendEvent } from "@/services/sqlFetchService"; // adjust path
 
-export interface CEvent {
-  name: string;
-  desc: string;
-  blobName: string;
+export interface CalendarEvent extends BackendEvent {}
+
+interface EventsState {
+  [dateString: string]: CalendarEvent[];
 }
-interface EventsState{
-  [dataString: string]: CEvent[];
+
+type VisibleRange = { start: Date; end: Date };
+
+function getMonthRange(year: number, month: number): VisibleRange {
+  // month: 1–12
+  const start = new Date(year, month - 1, 1); 
+  const end = new Date(year, month, 1);
+  return { start, end };
 }
 
 export default function CalendarScreen() {
-
   const colorScheme = useColorScheme();
-  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
-  const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
+  const themeTextStyle =
+    colorScheme === "light" ? styles.lightThemeText : styles.darkThemeText;
+  const themeContainerStyle =
+    colorScheme === "light" ? styles.lightContainer : styles.darkContainer;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
+
+  // Initial visible range = this month
+  const now = new Date();
+  const initialRange = getMonthRange(now.getFullYear(), now.getMonth() + 1);
 
   const [selected, setSelected] = useState(today);
   const [modalVisible, setModalVisible] = useState(false);
-  const [addEventDisabled, setAddEventDisabled] = useState(selected === '' ? true:false);
-  const [eventName, setEventText] = useState('');
-  const [eventDesc, setEventDesc] = useState('');
+  const [addEventDisabled, setAddEventDisabled] = useState(false);
+
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventDesc, setEventDesc] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const[events, setEvents] = useState<EventsState>({});
-  const [markedDates, setMarkedDates] = useState({});
+  const [events, setEvents] = useState<EventsState>({});
+  const [markedDates, setMarkedDates] = useState<MarkedDates>({});
+  const [visibleRange, setVisibleRange] = useState<VisibleRange>(initialRange);
 
-
-//test dates
-const dates = ["2025-12-24", "2025-12-12", "2025-12-25", "2025-12-24"];
-
-
-useEffect(() => {
-    createMarkedDates(dates);
-  }, []); // run once on mount; change deps if dates change
-
-const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
-  const marked: MarkedDates = {};
-  const counts: Record<string, number> = {};
-
-  //counts number of dates
-  datesArray.forEach((d) => {
-    counts[d] = (counts[d] || 0) + 1;
-  });
-
-  //pushes the dot and dot color to marked array
-  Object.keys(counts).forEach((date) => {
-    const dots = [];
-    for (let i = 0; i < counts[date]; i++) {
-      dots.push({ key: `${date}-dot-${i}`, color: "blue" });
-    }
-
-    marked[date] = { dots };
-  });
-
-  //Highlights selected day (event dots do not matter)
-  if (selectedDate) {
-    marked[selectedDate] = {
-      ...(marked[selectedDate] || {}), // keep existing dots
-      selected: true,
-      selectedColor: "#00adf5",        // blue circle
-      selectedTextColor: "white"
-    };
-  }
-
-  setMarkedDates(marked);
-};
-
-
-
-
-/*
+  // Fetch events when visible month changes
   useEffect(() => {
-    async function loadEvents(){
-      if (!selected) return;
-      const loaded = await listEventsByDate(selected);
-      setEvents(prev => ({ ...prev, [selected]: loaded} ));
+    async function loadEvents() {
+      try {
+        const { events: apiEvents } = await getEventsInRange(
+          visibleRange.start,
+          visibleRange.end
+        );
+
+        const byDate: EventsState = {};
+        for (const ev of apiEvents) {
+          const dateKey = ev.startTime.split("T")[0]; // "YYYY-MM-DD"
+          if (!byDate[dateKey]) byDate[dateKey] = [];
+          byDate[dateKey].push(ev);
+        }
+
+        setEvents(byDate);
+      } catch (err) {
+        console.error("[CalendarScreen] Failed to load events:", err);
+      }
     }
+
     loadEvents();
-  }, [selected])*/
+  }, [visibleRange]);
+
+  // Build markedDates when events or selected changes
+  useEffect(() => {
+    const marked: MarkedDates = {};
+
+    Object.keys(events).forEach((date) => {
+      const count = events[date].length;
+      if (count > 0) {
+        const dots = Array.from({ length: count }).map((_, i) => ({
+          key: `${date}-dot-${i}`,
+          color: "blue",
+        }));
+        marked[date] = { dots };
+      }
+    });
+
+    if (selected) {
+      marked[selected] = {
+        ...(marked[selected] || {}),
+        selected: true,
+        selectedColor: "#00adf5",
+        selectedTextColor: "white",
+      };
+    }
+
+    setMarkedDates(marked);
+  }, [events, selected]);
 
   const selectedDayEvents = events[selected] || [];
 
-  const marked: any = {
-    [selected]: { selected: true, disableTouchEvent: true}
-  }
-
-  Object.keys(events).forEach(date => {
-    if (events[date].length>0){
-      marked[date] = {
-        ...(marked[date] || {}),
-        marked: true,
-        dotColor: 'blue'
-      }
-    }
-  })
   const onSaveEvent = async () => {
-    if (!selected || eventName.trim() === '') return;
+    if (!selected || eventTitle.trim() === "") return;
 
     const existingEvents = events[selected] || [];
-    
+
     try {
-        if(editMode && editIndex !== null){
-            const target = existingEvents[editIndex];
+      if (editMode && editIndex !== null) {
+        const target = existingEvents[editIndex];
 
-            const updatedEvent: CEvent = {
-              ...target,
-              name: eventName,
-              desc: eventDesc
-            }
-            
-            //await editEvent(target.blobName, updatedEvent);
+        const updatedEvent: CalendarEvent = {
+          ...target,
+          title: eventTitle,
+          description: eventDesc,
+        };
 
-            setEvents(prev => {
-              const copy = [...existingEvents];
-              copy[editIndex] = updatedEvent;
-              return { ...prev, [selected]: copy };
-            });
+        setEvents((prev) => {
+          const copy = [...existingEvents];
+          copy[editIndex] = updatedEvent;
+          return { ...prev, [selected]: copy };
+        });
+      } else {
+        const id = `local-${Date.now()}`;
+        const startTime = `${selected}T00:00:00.000Z`;
+        const endTime = `${selected}T01:00:00.000Z`;
 
-        } else {
-          const blobName = `${selected}-${Date.now()}.json`;
-          const newEvent: CEvent = { name: eventName, desc: eventDesc, blobName };
+        const newEvent: CalendarEvent = {
+          id,
+          title: eventTitle,
+          description: eventDesc,
+          startTime,
+          endTime,
+          isUserOrganizer: 1,
+        };
 
-          //await addBlob(newEvent);
-
-          setEvents(prev => ({
-            ...prev,
-            [selected]: [...existingEvents, newEvent]
-          }));
-        }
+        setEvents((prev) => ({
+          ...prev,
+          [selected]: [...existingEvents, newEvent],
+        }));
+      }
     } catch (error) {
-        console.error(`Failed to ${editMode ? 'edit' : 'add'} event:`, error);
-        alert(`event failed to ${editMode ? 'edit' : 'save'}.`);
-        return; 
+      console.error(
+        `Failed to ${editMode ? "edit" : "add"} event:`,
+        error
+      );
+      alert(`Event failed to ${editMode ? "edit" : "save"}.`);
+      return;
     }
 
     setModalVisible(false);
-    setEventText('');
-    setEventDesc('');
+    setEventTitle("");
+    setEventDesc("");
     setEditMode(false);
     setEditIndex(null);
   };
-    
-    const onDeleteEvent = async(blobName: string) => {
-      try{
-        //await deleteBlob(blobName);
 
-      setEvents(prev => ({
+  const onDeleteEvent = async (id: string) => {
+    try {
+      setEvents((prev) => ({
         ...prev,
-        [selected]:prev[selected].filter(e => e.blobName !== blobName)
+        [selected]: prev[selected].filter((e) => e.id !== id),
       }));
-      }catch (error) {
+    } catch (error) {
       console.error("Failed to delete event:", error);
       alert("Failed to delete event.");
     }
-  }
-    
-    const onEditEvent = (index : number) =>{
-      if (!selectedDayEvents[index]) return;
-      const event = selectedDayEvents[index];
+  };
 
-      setEventText(event.name);
-      setEventDesc(event.desc);
-      setEditMode(true);
-      setEditIndex(index);
-      setModalVisible(true);
+  const onEditEvent = (index: number) => {
+    if (!selectedDayEvents[index]) return;
+    const event = selectedDayEvents[index];
 
-    }
+    setEventTitle(event.title);
+    setEventDesc(event.description);
+    setEditMode(true);
+    setEditIndex(index);
+    setModalVisible(true);
+  };
 
   return (
     <ScrollView style={themeContainerStyle}>
       <View style={themeContainerStyle}>
-        <Calendar 
-          current = {today}
-          onDayPress = {(day) => {
+        <Calendar
+          current={today}
+          onDayPress={(day) => {
             const date = day.dateString;
-            console.log (day);  
-            setSelected(day.dateString);  
-            setAddEventDisabled(false); 
-            createMarkedDates(dates, date);
+            setSelected(date);
+            setAddEventDisabled(false);
           }}
-
+          onMonthChange={(month) => {
+            const { start, end } = getMonthRange(month.year, month.month);
+            setVisibleRange({ start, end });
+          }}
           markedDates={markedDates}
-          markingType='multi-dot'
+          markingType="multi-dot"
           style={themeContainerStyle}
           theme={{
-            backgroundColor: '#151718',
-            calendarBackground: '#151718',
-            
-
+            backgroundColor: "#151718",
+            calendarBackground: "#151718",
           }}
         />
       </View>
 
-        <View style={[themeContainerStyle, styles.eventBtn]}>
-          <Button
-            title="+ Add Event" 
-            onPress={() => {setModalVisible(true);}} 
-            disabled={addEventDisabled} 
-            />
-        </View>
+      <View style={[themeContainerStyle, styles.eventBtn]}>
+        <Button
+          title="+ Add Event"
+          onPress={() => {
+            setModalVisible(true);
+          }}
+          disabled={addEventDisabled}
+        />
+      </View>
+
       {selected ? (
         <View style={[themeContainerStyle, styles.eventListContainer]}>
-          <Text style = {[themeTextStyle, styles.eventListHeader]}> Event List of {selected} </Text>
-            {selectedDayEvents.length > 0 ?(
-              selectedDayEvents.map((event, index) => (
-                <View key = {index} style = {[themeContainerStyle, styles.eventItem]}>
-                  <Text style = {styles.eventNameText}>**{event.name}**</Text>
-                  <Text style = {styles.eventDescText}>{event.desc}</Text>
+          <Text style={[themeTextStyle, styles.eventListHeader]}>
+            Event List for {selected}
+          </Text>
+          {selectedDayEvents.length > 0 ? (
+            selectedDayEvents.map((event, index) => (
+              <View
+                key={event.id ?? index}
+                style={[themeContainerStyle, styles.eventItem]}
+              >
+                <Text style={styles.eventNameText}>{event.title}</Text>
+                <Text style={styles.eventDescText}>{event.description}</Text>
 
-                  <View style={[themeContainerStyle, { flexDirection: 'row', justifyContent: 'flex-end' }]}>
-                    <TouchableOpacity onPress={() => onEditEvent(index)} style={styles.eventActionBtn}>
-                      <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => onDeleteEvent(event.blobName)} style={styles.eventActionBtn}>
-                      <Text style={{ color: 'red' }}>Delete</Text>
-                   </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 8,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => onEditEvent(index)}
+                    style={styles.eventActionBtn}
+                  >
+                    <Text style={{ color: "blue", marginRight: 10 }}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onDeleteEvent(event.id)}
+                    style={styles.eventActionBtn}
+                  >
+                    <Text style={{ color: "red" }}>Delete</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             ))
@@ -234,75 +267,93 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
           <Text style={styles.noEventText}>No date selected</Text>
         </View>
       )}
-      
 
-      <Modal
-        visible = {modalVisible}
-        animationType='slide'
-        style={themeContainerStyle}    
-      >
+      <Modal visible={modalVisible} animationType="slide">
         <View style={styles.Modal}>
           <View style={styles.modalContainer}>
-            <Text style = {{fontSize: 18, marginBottom : 10}}>{selected} Event </Text>
-            <TextInput placeholder='Event Name' value={eventName} onChangeText={setEventText} style={styles.input}></TextInput>
-            <TextInput placeholder='Event Description' value={eventDesc} onChangeText={setEventDesc} style={styles.input} multiline={true} ></TextInput>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
-              <Button 
-                title='Save' 
+            <Text style={{ fontSize: 18, marginBottom: 10 }}>
+              {selected} Event
+            </Text>
+            <TextInput
+              placeholder="Event Name"
+              value={eventTitle}
+              onChangeText={setEventTitle}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Event Description"
+              value={eventDesc}
+              onChangeText={setEventDesc}
+              style={styles.input}
+              multiline={true}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginTop: 20,
+              }}
+            >
+              <Button
+                title="Save"
                 onPress={onSaveEvent}
-                disabled={eventName.trim() === ''} 
+                disabled={eventTitle.trim() === ""}
               />
-            <Button title = "close" onPress={() => {
-              setEventText('');
-              setEventDesc('');
-              setModalVisible(false); 
-              } } color="black"/>
+              <Button
+                title="Close"
+                onPress={() => {
+                  setEventTitle("");
+                  setEventDesc("");
+                  setModalVisible(false);
+                  setEditMode(false);
+                  setEditIndex(null);
+                }}
+                color="black"
+              />
             </View>
-          </View> 
+          </View>
         </View>
       </Modal>
     </ScrollView>
-
-
   );
 }
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   Modal: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 100    
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 100,
   },
 
   modalContainer: {
-    width: '80%',
+    width: "80%",
     margin: 20,
     padding: 20,
     borderRadius: 10,
     opacity: 1,
-    backgroundColor:'white',
-    elevation : 5,
-    shadowColor : '#000',
-    shadowOffset: {width: 0, height: 2},
+    backgroundColor: "white",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
 
   input: {
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     borderRadius: 5,
     marginVertical: 8,
     padding: 10,
-    backgroundColor: 'f9f9f9#',
+    backgroundColor: "#f9f9f9",
     minHeight: 40,
     maxHeight: 120,
   },
 
   eventBtn: {
-    padding:10,
-    margin:10,
-    textAlign: 'center',
+    padding: 10,
+    margin: 10,
+    textAlign: "center",
   },
   eventListContainer: {
     padding: 15,
@@ -311,70 +362,52 @@ const styles = StyleSheet.create ({
   },
   eventListHeader: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     paddingBottom: 5,
   },
   eventItem: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 10,
     borderRadius: 6,
     marginBottom: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#007aff',
+    borderLeftColor: "#007aff",
     elevation: 1,
   },
   eventNameText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 2,
   },
   eventDescText: {
     fontSize: 12,
-    color: '#555',
+    color: "#555",
   },
   noEventText: {
     fontSize: 14,
-    color: 'gray',
-    textAlign: 'center',
+    color: "gray",
+    textAlign: "center",
     paddingVertical: 10,
-  },eventActions: {
-    flexDirection: 'row',
-    position: 'absolute',
-    right: 10,
-    top: 10,
   },
-  smallButton: {
-    backgroundColor: '#007aff',
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 4,
+  eventActionBtn: {
     marginLeft: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  eventActionBtn:{
-    marginLeft: 5,
-    marginRight: 5
+    marginRight: 5,
   },
   lightContainer: {
-    backgroundColor: '#fff',
-    borderColor: '#151718'
+    backgroundColor: "#fff",
+    borderColor: "#151718",
   },
   darkContainer: {
-    backgroundColor: '#151718',
-    borderColor: '#ECEDEE',
+    backgroundColor: "#151718",
+    borderColor: "#ECEDEE",
   },
   lightThemeText: {
-    color: '#11181C',
+    color: "#11181C",
   },
   darkThemeText: {
-    color: '#ECEDEE',
+    color: "#ECEDEE",
   },
-
-})
+});

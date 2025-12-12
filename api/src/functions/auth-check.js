@@ -1,7 +1,7 @@
 //THIS ENDPOINT CHECKS THAT AN EXISTING AUTH TOKEN IS VALID
 const { app } = require("@azure/functions");
 const { sql, poolPromise } = require("./db");
-const { getUserFromRequest, extractBearerToken } = require("../utils/auth");
+const { getUserFromRequest} = require("../utils/auth");
 
 app.http("authCheck", {
   methods: ["GET", "OPTIONS"],
