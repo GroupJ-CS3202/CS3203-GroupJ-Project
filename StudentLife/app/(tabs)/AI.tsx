@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  ListRenderItem,   // ⬅ import this
+  ListRenderItem, 
 } from "react-native";
 import { callAi } from "../../services/azureService";
 
@@ -49,7 +49,6 @@ export default function ChatScreen() {
     setIsLoading(true);
 
     try {
-      // ✅ send full history to backend
       const replyText = await callAi(newMessages);
 
       const botMessage: Message = {
