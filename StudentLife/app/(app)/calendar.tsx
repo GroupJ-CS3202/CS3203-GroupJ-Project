@@ -1,12 +1,9 @@
 import React, { useState, useEffect} from 'react';
-import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Modal, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, useColorScheme} from "react-native";
 import { Calendar, LocaleConfig} from 'react-native-calendars';
 //import { addBlob, deleteBlob, editEvent, listEventsByDate, CEvent  } from './azureBlob';
 import { MarkedDates } from "react-native-calendars/src/types";
 
-
-
-//TODO: add dark mode
 export interface CEvent {
   name: string;
   desc: string;
@@ -17,6 +14,11 @@ interface EventsState{
 }
 
 export default function CalendarScreen() {
+
+  const colorScheme = useColorScheme();
+  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
+  const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
+
   const today = new Date().toISOString().split('T')[0];
 
   const [selected, setSelected] = useState(today);
@@ -43,20 +45,22 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
   const marked: MarkedDates = {};
   const counts: Record<string, number> = {};
 
+  //counts number of dates
   datesArray.forEach((d) => {
     counts[d] = (counts[d] || 0) + 1;
   });
 
+  //pushes the dot and dot color to marked array
   Object.keys(counts).forEach((date) => {
     const dots = [];
     for (let i = 0; i < counts[date]; i++) {
-      dots.push({ key: `${date}-dot-${i}`, color: "red" });
+      dots.push({ key: `${date}-dot-${i}`, color: "blue" });
     }
 
     marked[date] = { dots };
   });
 
-  // ⬅️ Highlight selected day (even if no events)
+  //Highlights selected day (event dots do not matter)
   if (selectedDate) {
     marked[selectedDate] = {
       ...(marked[selectedDate] || {}), // keep existing dots
@@ -171,21 +175,31 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
     }
 
   return (
-    <ScrollView>
-      <Calendar 
-        current = {today}
-        onDayPress = {(day) => {
-          const date = day.dateString;
-          console.log (day);  
-          setSelected(day.dateString);  
-          setAddEventDisabled(false); 
-          createMarkedDates(dates, date);
-        }}
+    <ScrollView style={themeContainerStyle}>
+      <View style={themeContainerStyle}>
+        <Calendar 
+          current = {today}
+          onDayPress = {(day) => {
+            const date = day.dateString;
+            console.log (day);  
+            setSelected(day.dateString);  
+            setAddEventDisabled(false); 
+            createMarkedDates(dates, date);
+          }}
 
-        markedDates={markedDates}
-        markingType='multi-dot'
-      />
-        <View style={styles.eventBtn}>
+          markedDates={markedDates}
+          markingType='multi-dot'
+          style={themeContainerStyle}
+          theme={{
+            backgroundColor: '#151718',
+            calendarBackground: '#151718',
+            
+
+          }}
+        />
+      </View>
+
+        <View style={[themeContainerStyle, styles.eventBtn]}>
           <Button
             title="+ Add Event" 
             onPress={() => {setModalVisible(true);}} 
@@ -193,15 +207,15 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
             />
         </View>
       {selected ? (
-        <View style={styles.eventListContainer}>
-          <Text style = {styles.eventListHeader}> Event List of {selected} </Text>
+        <View style={[themeContainerStyle, styles.eventListContainer]}>
+          <Text style = {[themeTextStyle, styles.eventListHeader]}> Event List of {selected} </Text>
             {selectedDayEvents.length > 0 ?(
               selectedDayEvents.map((event, index) => (
-                <View key = {index} style = {styles.eventItem}>
+                <View key = {index} style = {[themeContainerStyle, styles.eventItem]}>
                   <Text style = {styles.eventNameText}>**{event.name}**</Text>
                   <Text style = {styles.eventDescText}>{event.desc}</Text>
 
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                  <View style={[themeContainerStyle, { flexDirection: 'row', justifyContent: 'flex-end' }]}>
                     <TouchableOpacity onPress={() => onEditEvent(index)} style={styles.eventActionBtn}>
                       <Text style={{ color: 'blue', marginRight: 10 }}>Edit</Text>
                     </TouchableOpacity>
@@ -216,7 +230,7 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
           )}
         </View>
       ) : (
-        <View style={styles.eventListContainer}>
+        <View style={[themeContainerStyle, styles.eventListContainer]}>
           <Text style={styles.noEventText}>No date selected</Text>
         </View>
       )}
@@ -224,7 +238,8 @@ const createMarkedDates = (datesArray: string[], selectedDate?: string) => {
 
       <Modal
         visible = {modalVisible}
-        animationType='slide'    
+        animationType='slide'
+        style={themeContainerStyle}    
       >
         <View style={styles.Modal}>
           <View style={styles.modalContainer}>
@@ -292,14 +307,12 @@ const styles = StyleSheet.create ({
   eventListContainer: {
     padding: 15,
     margin: 10,
-    backgroundColor: '#f0f0f0',
     borderRadius: 8,
   },
   eventListHeader: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     paddingBottom: 5,
@@ -348,5 +361,20 @@ const styles = StyleSheet.create ({
   eventActionBtn:{
     marginLeft: 5,
     marginRight: 5
-  }
+  },
+  lightContainer: {
+    backgroundColor: '#fff',
+    borderColor: '#151718'
+  },
+  darkContainer: {
+    backgroundColor: '#151718',
+    borderColor: '#ECEDEE',
+  },
+  lightThemeText: {
+    color: '#11181C',
+  },
+  darkThemeText: {
+    color: '#ECEDEE',
+  },
+
 })
