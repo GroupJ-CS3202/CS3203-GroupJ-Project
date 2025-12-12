@@ -26,7 +26,7 @@ Node.js (comes with npm) or Yarn (https://nodejs.org/en/download)
 
 Expo (https://expo.dev)
 
-### Our domain
+## Our domain
 
 This is the domain of our web app, if you do not want to install all the stuff to help work on the code.
 
@@ -93,55 +93,55 @@ If installing within IOS: npx react-native run-ios
 
 If installing within Android: npx react-native run-android 
 
-### Features
+# Features
 
 These are all the core functions accessible via tabs at the bottom of the page:
 
 ## Home Screen
 
-# Event Panel:
+### Event Panel:
 
 Shows all coming events in the near future on the bottom of the screen.
 
-# AI Section (Smart Summary):
+### AI Section (Smart Summary):
 
 Located in the middle, this provides a smart summary of your weekly schedule, highlighting important events and any urgent or emerging tasks.
 
-# Bulletin Board:
+### Bulletin Board:
 
 The section under "welcome" displays important announcements, updates, reminders, or messages relevant to the user. (Still work in progress)
 
 ## Calendar
 
-# Current Date View:
+### Current Date View:
 
 The current date, matching your system's date, is highlighted with a blue circle.
 
-# Date Selection: 
+### Date Selection: 
 
 Users can select any other date by clicking on it, which will also display a blue circle.
 
-# Add Event: 
+### Add Event: 
 
 Select a date and click the "+ ADD EVENT" blue rectangle to create a new event, including an event name and description.
 
-# Event List:
+### Event List:
 
 A list of all created events for the selected day is displayed.
 
-# Edit Event: 
+### Edit Event: 
 
 An "Edit" button allows users to return to the event creation page to make changes.
 
-# Delete Event:
+### Delete Event:
 
 A "Delete" button on the right side of an event allows for its removal.
 
-## AI Helper
+### AI Helper
 
 To be honest, it's basically just ChatGPT
 
-## Other Sections
+### Other Sections
 
 Finance, Events, and Settings pages are still a work in progress, although so far, toggling dark mode in the settings work though. 
 
