@@ -44,8 +44,11 @@ const SignUpPage = () => {
         Alert.alert('Registration Failed', 'Email is not valid. Please check email and try again.');
         return;
     }
-    Alert.alert('Registration Success', `Welcome, ${name}!`);
+    Alert.alert(
+    'Registration Success',
+    `Welcome, ${name}!`);
     router.back();
+
   };
 
   return (
@@ -95,6 +98,7 @@ const SignUpPage = () => {
             onChangeText={setConfirmPassword}
             secureTextEntry
           />
+          
           <View style={styles.buttonContainer}>
             <Button title="Register" onPress={handleSignUp} color="#28A745" />
           </View>
