@@ -36,6 +36,14 @@ const SignUpPage = () => {
       Alert.alert('Registration Failed', 'Passwords do not match.');
       return;
     }
+    if (!checkName()) {
+      Alert.alert('Registration Failed', 'Name is not valid. Only letters and numbers are allowed.');
+      return;
+    }
+    if(!checkEmail()){
+        Alert.alert('Registration Failed', 'Email is not valid. Please check email and try again.');
+        return;
+    }
     Alert.alert('Registration Success', `Welcome, ${name}!`);
     router.back();
   };
