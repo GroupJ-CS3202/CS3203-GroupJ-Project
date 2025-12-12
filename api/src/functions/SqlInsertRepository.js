@@ -90,6 +90,15 @@ app.http("insertEvent", {
         };
       }
 
+      if(title.length > 128 || description.length > 255 || CalendarID.length != 36)
+      {
+        return {
+          status: 400, 
+          headers: corsHeaders, 
+          jsonBody: {error: "Invalid body" }
+        };
+      }
+
       const calendarId = calendarQuery.recordset[0].CalendarID;
 
       // -------------------------------------------------------------------
