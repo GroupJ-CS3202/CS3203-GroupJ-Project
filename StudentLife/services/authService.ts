@@ -112,7 +112,7 @@ export async function verifyAuthWithServer(): Promise<LoginResult | null> {
   if (!auth) return null;
 
   try {
-    const res = await fetch('/api/auth-check', { //http://localhost:7071/api/auth-check
+    const res = await fetch('api/auth-check', { //http://localhost:7071/api/auth-check
       method: 'GET',
       headers: {
         "X-Auth-Token": `Bearer ${auth.token}`,

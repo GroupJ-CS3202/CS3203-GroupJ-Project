@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - azure-backend
+      - azure-backend-safe
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
