@@ -43,3 +43,12 @@ export async function callAi(history: ChatMessage[]) {
 
   return data.reply as string;
 }
+
+export async function callAiFromString(
+  prompt: string,
+  role: ChatMessage["role"] = "user"
+) {
+  const history: ChatMessage[] = [{ role, content: prompt }];
+  return callAi(history);
+}
+
