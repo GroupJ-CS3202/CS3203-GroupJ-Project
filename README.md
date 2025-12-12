@@ -137,11 +137,11 @@ An "Edit" button allows users to return to the event creation page to make chang
 
 A "Delete" button on the right side of an event allows for its removal.
 
-### AI Helper
+## AI Helper
 
 To be honest, it's basically just ChatGPT
 
-### Other Sections
+## Other Sections
 
 Finance, Events, and Settings pages are still a work in progress, although so far, toggling dark mode in the settings work though. 
 
