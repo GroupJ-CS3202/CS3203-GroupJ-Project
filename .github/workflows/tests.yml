@@ -1,0 +1,23 @@
+name: Frontend Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: StudentLife/package-lock.json
+
+      - name: Install + Test (StudentLife)
+        working-directory: StudentLife
+        run: |
+          npm ci
+          npm test

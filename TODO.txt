@@ -1,0 +1,7 @@
+To Do:
+
+- Continue work on Calendar page:
+    - Decide what form of display we will use for showing events.
+    - Finish implementing frontend of Calendar
+    - Save calendar data locally and back up to server
+
