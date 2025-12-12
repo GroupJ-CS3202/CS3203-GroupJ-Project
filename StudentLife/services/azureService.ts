@@ -1,4 +1,4 @@
-const API_URL = "/api/ai-completion";
+const API_URL = "http://localhost:7071/api/ai-completion";
 import { BackendEvent, EventsRangeResult, getEventsInRange } from "./sqlFetchService";
 
 type ChatMessage = {
@@ -55,16 +55,16 @@ export async function callAiFromString(
 
 export async function createPromptForSummary() {
   const startInterval = new Date();
-
+  startInterval.setDate(startInterval.getDate() - 1);
   const endInterval = new Date();
   endInterval.setDate(endInterval.getDate() + 10);
 
-  const events : EventsRangeResult = await getEventsInRange(startInterval, endInterval);
+  const result : EventsRangeResult = await getEventsInRange(startInterval, endInterval);
 
   let prompt =
     "You are a summarization bot. Summarize all of these events in 60 words or less.\n\n";
 
-  for (const e of events.events) {
+  for (const e of result.events) {
     prompt += `${e.title}, ${e.description}, ${e.startTime}, ${e.endTime}\n`;
   }
 

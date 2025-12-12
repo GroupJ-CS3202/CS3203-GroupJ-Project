@@ -4,7 +4,7 @@ import { getStoredUserName } from "@/services/userService";
 import { useEffect, useState } from "react";
 import { createPromptForSummary, callAiFromString } from "@/services/azureService";
 import { BackendEvent } from "@/services/sqlFetchService";
-
+import { getEventsInRange } from "@/services/sqlFetchService";
 
 export default function HomeScreen() {
   const userName = getStoredUserName(); // placeholder — replace with actual user later
@@ -16,25 +16,36 @@ export default function HomeScreen() {
 
    const [summary, setSummary] = useState<string>("Loading summary...");
    const [events, setEvents] = useState<BackendEvent[]>([]);
+   const [loadingEvents, setLoadingEvents] = useState(true);
+  
 
-    useEffect(() => {
-    let cancelled = false;
-
-    const loadSummary = async () => {
+  useEffect(() => {
+    async function loadEventsAndSummary() {
       try {
+        // 1. Create summarization prompt
         const prompt = await createPromptForSummary();
+
+        // 2. Get AI summary
         const aiSummary = await callAiFromString(prompt);
-        if (!cancelled) setSummary(aiSummary);
-      } catch (err: any) {
-        if (!cancelled) setSummary(err?.message ?? "Failed to load summary.");
+        setSummary(aiSummary);
+
+        // 3. Load real events
+        const start = new Date();
+        start.setDate(start.getDate() - 1);
+        const end = new Date();
+        end.setDate(end.getDate() + 10);
+
+        const result = await getEventsInRange(start, end);
+        setEvents(result.events);
+      } catch (err) {
+        console.error(err);
+        setSummary("Unable to load event summary.");
+      } finally {
+        setLoadingEvents(false);
       }
-    };
+    }
 
-    loadSummary();
-
-    return () => {
-      cancelled = true;
-    };
+    loadEventsAndSummary();
   }, []);
   
 
@@ -74,11 +85,23 @@ export default function HomeScreen() {
             </Text>
           </View>
           
+          {/* EVENTS LIST --------------------------------------------------- */}
           <Text style={[styles.eventText, themeTextStyle]}>
-            Upcomming Events
+            Upcoming Events
           </Text>
 
           <ScrollView style={[styles.scrollView, themeContainerStyle]}>
+            {events.length > 0 ? (
+              events.map((event, index) => (
+                <Text key={index} style={[styles.text, themeTextStyle]}>
+                  • {event.title}
+                </Text>
+              ))
+            ) : (
+              <Text style={[styles.text, themeTextStyle]}>
+                {loadingEvents ? "Loading events..." : "No events available."}
+              </Text>
+            )}
           </ScrollView>
         </View>
       </View>
