@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 function extractBearerToken(req) { //Use this to extract a token from a request header
   const header =
-    req.headers.get('authorization') || req.headers.get('Authorization');
+    req.headers.get('X-Auth-Token') || req.headers.get('x-auth-token');
   if (!header) return null;
 
   const [scheme, token] = header.split(' ');
