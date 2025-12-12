@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     borderColor: '#151718'
   },
   darkContainer: {
-    backgroundColor: '#151718',
+    backgroundColor: '#176389ff',
     borderColor: '#ECEDEE',
   },
   lightThemeText: {

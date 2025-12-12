@@ -7,3 +7,7 @@ require("./SqlFetchRepository")
 require("./SqlInsertRepository")
 require("./SqlDeleteRepository")
 require("./sqlEditRepository")
+require("./financeGetEntries");
+require("./financeAddEntry");
+require("./financeGetBudget");
+require("./financeUpserBudget");
