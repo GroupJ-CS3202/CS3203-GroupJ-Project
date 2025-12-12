@@ -1,6 +1,10 @@
 import { View, Text, ScrollView, Appearance, useColorScheme, StyleSheet} from "react-native";
 import {StatusBar} from 'expo-status-bar';
 import { getStoredUserName } from "@/services/userService";
+import { useEffect, useState } from "react";
+import { createPromptForSummary, callAiFromString } from "@/services/azureService";
+import { BackendEvent } from "@/services/sqlFetchService";
+
 
 export default function HomeScreen() {
   const userName = getStoredUserName(); // placeholder — replace with actual user later
@@ -10,9 +14,28 @@ export default function HomeScreen() {
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
-  // Placeholder events
-  const events = ["Meeting at 3 PM", "Project deadline", "Team standup"];
+   const [summary, setSummary] = useState<string>("Loading summary...");
+   const [events, setEvents] = useState<BackendEvent[]>([]);
 
+    useEffect(() => {
+    let cancelled = false;
+
+    const loadSummary = async () => {
+      try {
+        const prompt = await createPromptForSummary();
+        const aiSummary = await callAiFromString(prompt);
+        if (!cancelled) setSummary(aiSummary);
+      } catch (err: any) {
+        if (!cancelled) setSummary(err?.message ?? "Failed to load summary.");
+      }
+    };
+
+    loadSummary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   
 
   return (
@@ -47,8 +70,7 @@ export default function HomeScreen() {
               AI Overview
             </Text>
             <Text style={[styles.text, themeTextStyle]}>
-              AI summary for the week will appear here.
-              {"\n"}(Placeholder content for now.)
+              {summary}
             </Text>
           </View>
           
@@ -57,19 +79,6 @@ export default function HomeScreen() {
           </Text>
 
           <ScrollView style={[styles.scrollView, themeContainerStyle]}>
-            {events.map((event, index) => (
-              <Text
-                key={index}
-                style={[styles.text, themeTextStyle]}
-              >
-                • {event}
-              </Text>
-            ))}
-
-            {/* If no events */}
-            {events.length === 0 && (
-              <Text style={{ color: "#777" }}>No events yet.</Text>
-            )}
           </ScrollView>
         </View>
       </View>
