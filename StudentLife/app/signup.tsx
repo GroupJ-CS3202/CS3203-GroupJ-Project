@@ -19,6 +19,14 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const checkName = () => {
+    return !(/[^A-Za-z0-9_.]/.test(name));
+  }
+
+  const checkEmail = () => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+  
   const handleSignUp = () => {
     if (!name || !email || !password || !confirmPassword) {
       Alert.alert('Registration Failed', 'Please fill in all fields.');
