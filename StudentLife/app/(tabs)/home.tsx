@@ -1,8 +1,9 @@
 import { View, Text, ScrollView, Appearance, useColorScheme, StyleSheet} from "react-native";
 import {StatusBar} from 'expo-status-bar';
+import { getStoredUserName } from "@/services/userService";
 
 export default function HomeScreen() {
-  const userName = "User"; // placeholder — replace with actual user later
+  const userName = getStoredUserName(); // placeholder — replace with actual user later
 
   //You will see this everywhere for now. This determines whether elements will be displayed in light or dark mode.
   const colorScheme = useColorScheme();

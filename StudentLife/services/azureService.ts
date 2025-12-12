@@ -15,6 +15,7 @@ export async function callAi(history: ChatMessage[]) {
     content: m.content,
   }));
 
+  const authToken = localStorage.getItem('authToken');
 
 
   const res = await fetch(API_URL, {
