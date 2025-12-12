@@ -15,17 +15,15 @@ import { router } from 'expo-router';
 import { login as loginRequest, saveAuth, verifyAuthWithServer} from '../services/authService';
 
 const LoginPage = () => {
-
   const colorScheme = useColorScheme();
-
 
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle = colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,9 +34,9 @@ const LoginPage = () => {
     })();
   }, []);
 
-
-
   const handleLogin = async () => {
+    setShowError(false); // Clears any previous errors
+
     if (!email || !password)
     {
         Alert.alert('Login Failed', 'Email and password are required.');
@@ -59,13 +57,13 @@ const LoginPage = () => {
     catch (err : any) 
     {
       console.error('Login error:', err);
-      Alert.alert('Login Failed', err.message ?? 'Login failed')
+      
+      setShowError(true); // Show error message instead of Alert
     }
     finally 
     {
       setLoading(false);
     }
-
   };
 
   const handleSignUp = () => {
@@ -103,6 +101,12 @@ const LoginPage = () => {
           secureTextEntry
           returnKeyType="done"
         />
+
+        {showError && (
+          <Text style={{ color: 'red', marginBottom: 10 }}>
+            Incorrect email or password. Please try again.
+          </Text>
+        )}
 
         <View style={[styles.buttonContainer, themeContainerStyle]}>
           <Button
