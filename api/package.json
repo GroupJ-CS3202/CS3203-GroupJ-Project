@@ -5,7 +5,7 @@
   "main": "src/functions/index.js",
   "scripts": {
     "start": "func start",
-    "test": "echo \"No tests yet...\""
+    "test": "jest --config ./jest.config.cjs"
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
@@ -16,6 +16,9 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^4.x"
+    "@types/jest": "^30.0.0",
+    "azure-functions-core-tools": "^4.x",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6"
   }
 }
