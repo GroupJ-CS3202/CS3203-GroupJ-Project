@@ -1,7 +1,7 @@
 //THIS ENDPOINT CHECKS THAT AN EXISTING AUTH TOKEN IS VALID
 const { app } = require("@azure/functions");
 const { sql, poolPromise } = require("./db");
-const { getUserFromRequest } = require("../utils/auth");
+const { getUserFromRequest, extractBearerToken } = require("../utils/auth");
 
 app.http("authCheck", {
   methods: ["GET", "OPTIONS"],
@@ -45,7 +45,7 @@ app.http("authCheck", {
         return {
           status: 401,
           headers: corsHeaders,
-          jsonBody: { error: "Invalid or missing token. Code: " +  err.code + " " + process.env.JWT_SECRET},
+          jsonBody: { error: "Invalid or missing token. Code: " +  err.code + " " + extractBearerToken(req)},
         };
       }
 
