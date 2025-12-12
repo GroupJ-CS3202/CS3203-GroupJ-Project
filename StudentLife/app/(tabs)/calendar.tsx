@@ -14,7 +14,7 @@ import {
 import { Calendar } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 import { getEventsInRange, BackendEvent } from "@/services/sqlFetchService"; // adjust path
-
+import { insertEvent } from "@/services/sqlInsertService";
 export interface CalendarEvent extends BackendEvent {}
 
 interface EventsState {
@@ -131,22 +131,19 @@ export default function CalendarScreen() {
           return { ...prev, [selected]: copy };
         });
       } else {
-        const id = `local-${Date.now()}`;
-        const startTime = `${selected}T00:00:00.000Z`;
-        const endTime = `${selected}T01:00:00.000Z`;
+        
+        const start = `${selected}T00:00:00.000Z`;
+        const end = `${selected}T01:00:00.000Z`;
 
-        const newEvent: CalendarEvent = {
-          id,
+        const savedEvent = await insertEvent({
           title: eventTitle,
           description: eventDesc,
-          startTime,
-          endTime,
-          isUserOrganizer: 1,
-        };
-
+          startTime: new Date(start),
+          endTime: new Date(end),
+        });
         setEvents((prev) => ({
           ...prev,
-          [selected]: [...existingEvents, newEvent],
+          [selected]: [...existingEvents, savedEvent],
         }));
       }
     } catch (error) {
