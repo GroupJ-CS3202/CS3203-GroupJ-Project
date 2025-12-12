@@ -15,7 +15,8 @@ import { Calendar } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 import { getEventsInRange, BackendEvent } from "@/services/sqlFetchService"; 
 import { insertEvent } from "@/services/sqlInsertService";
-import { deleteEvent } from "@/services/sqlDeleteService"; 
+import { deleteEvent } from "@/services/sqlDeleteService";
+import { editEvent } from "@/services/sqlEditService"; 
 export interface CalendarEvent extends BackendEvent {}
 
 interface EventsState {
@@ -120,17 +121,20 @@ export default function CalendarScreen() {
       if (editMode && editIndex !== null) {
         const target = existingEvents[editIndex];
 
-        const updatedEvent: CalendarEvent = {
-          ...target,
-          title: eventTitle,
-          description: eventDesc,
-        };
+      // Call the editEvent service
+      const updatedEvent = await editEvent({
+        eventId: target.id,
+        title: eventTitle,
+        description: eventDesc,
+        startTime: new Date(target.startTime),
+        endTime: new Date(target.endTime),
+      });
 
-        setEvents((prev) => {
-          const copy = [...existingEvents];
-          copy[editIndex] = updatedEvent;
-          return { ...prev, [selected]: copy };
-        });
+      setEvents((prev) => {
+        const copy = [...existingEvents];
+        copy[editIndex] = updatedEvent;
+        return { ...prev, [selected]: copy };
+      });
       } else {
         
         const start = `${selected}T00:00:00.000Z`;

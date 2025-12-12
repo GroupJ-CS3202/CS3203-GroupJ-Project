@@ -6,3 +6,4 @@ require("./auth-check");
 require("./SqlFetchRepository")
 require("./SqlInsertRepository")
 require("./SqlDeleteRepository")
+require("./sqlEditRepository")
